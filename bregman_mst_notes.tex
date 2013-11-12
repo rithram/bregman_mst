@@ -1,0 +1,163 @@
+\documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   		% ... or a4paper or a5paper or ... 
+%\geometry{landscape}                		% Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+								% TeX will automatically convert eps --> pdf in pdflatex		
+\usepackage{amssymb, amsmath,amsthm}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{definition}[theorem]{Definition}
+
+\title{Minimum Spanning Trees over Bregman Divergences}
+\author{Bill March}
+%\date{}							% Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+%\section{}
+%\subsection{}
+
+\section{Defining the Problem}
+
+The goal is to come up with an efficient and practical hierarchical clustering algorithm for Bregman divergences.  In general, we would like to build on my fast EMST algorithm to do this.  
+
+One easy approach is to define a graph on points, with edge weights related to pairwise Bregman divergences.  Given this, it becomes simple to develop an MST algorithm.
+
+Possible definitions of the graph:
+\begin{itemize}
+\item The weight on edge $(u,v)$ is $\min \left\{ d(u,v), d(v,u) \right\}$.  Pros: simple, easy to compute?.  Cons: ignores the directionality of the divergence. Also, means we always have to compute both ways when doing a prune or distance check. Actually, this fits in naturally, since every point appears separately as a query and as a reference. 
+\item Impose a total ordering on the inputs (i.e. their index in the data matrix). Then, the edge weight is always computed with the lower index as the first argument of the divergence. However, we might get a loop in one Boruvka step, since two components could be each others nearest neighbors, but want to add different edges. 
+\item Edge $(u,v)$ has weight $d(u, v) + d(v, u) / 2$.  This is the standard way to turn the divergence into a metric, I believe. 
+\end{itemize}
+
+
+Dual-tree algorithms using Bregman ball trees should be simple. Cayton's second paper gives algorithms to determine containment and intersection of two balls.  We can define the dual-tree NN search problem to be a ball intersection query.  Given a query node with bounding ball $B(q, d_q)$ and reference node $B(r, d_r)$, let $\hat{d}$ be the maximum distance to a nearest neighbor candidate over query points.  Then, we can prune if $B(q, d_q + \hat{d})$ doesn't intersect $B(r, d_r)$ (or we could add the distance on the other side).  
+
+Does this somehow invoke the triangle inequality? I believe it does.  We are saying that any point that is closer to a point in the query than $\hat{d}$ must lie in $B(q, d_q + \hat{d})$. But, without the triangle inequality, a point could be far from $q$ but close to a point in $B(q, d_q)$? 
+
+I may be able to get around this with the analog to the Pythagorean theorem for Bregman divergences. 
+
+\begin{theorem}
+Let $C$ be a convex set and let $x \in C$. Then, for any $z$, we have 
+\begin{equation}
+d_f(x,z) \geq d_f(x,y) + d_f(y,z)
+\end{equation}
+where $y = \arg \min_{y \in C} d_f(y,z)$ is the projection of $z$ onto $C$.
+\end{theorem}
+
+Rather than adding to the radius inside the definition of the ball (which requires the triangle inequality), I can use this?
+
+
+
+Another possibility is to generalize the proof about the shortest distance between a point and a Bregman ball to the shortest distance between two Bregman balls. 
+
+
+
+%%%%%%%%%%%%
+
+\section{Primitives on Bregman Ball Trees}
+
+Projecting a point onto the surface of a ball
+	this corresponds to closest point
+
+Determine if one ball is contained in another 
+
+Determine if two balls intersect
+
+
+Want: min distance between two balls
+	achieve this through two projections
+	Prove something like observation of extension of Euclidean solution to this
+	
+Claim: distance between balls is bounded by distance between centers minus radii
+	need to lower bound distance between balls
+	So, no need to prove that we achieve this
+	
+Assume $\min_{q, r} d(q,r) < d(\mu_q, \mu_r) - R_q - R_r$.  Clearly, the balls don't overlap.
+	Try applying Pythagorean theorem of Bregman divergences on q and r, wherever they are.
+	
+	Use definitions of balls (and fact that they are distinct: $d(q,\mu_r) > R_r$, etc.)
+
+
+
+\subsection{Dual-Tree Pruning Rule}
+
+First, we define left and right Bregman balls.
+
+\begin{definition}
+The left and right Bregman balls of radius $R$ and center $\mu$ are given by 
+\begin{eqnarray}
+B(\mu, R) & = & \{ x : d(x,\mu) \leq R \} \\
+B^\dagger(\mu, R) & = & \{ x : d(\mu, x) \leq R \}
+\end{eqnarray}
+\end{definition}
+
+Consider the all left-nearest-neighbors task.  For all $q$, find the $r$ that minimizes $d(r,q)$.
+
+Let $B(\mu_r, R_r)$ and $B^\dagger(\mu_q, R_q)$ be Bregman balls enclosing the set of references and queries. Let each query $q$ have a candidate nearest neighbor $c_q$, with $d(n_q, q) = c_q$.  Let $c^* = \min_{q} c_q$.  
+
+Then, we can prune this pair of nodes if 
+\begin{equation}
+\min_q \min_r d(r,q) > c^*
+\end{equation}
+So, we seek a lower bound on the quantity on the left.  If this lower bound is greater than $c^*$.
+
+We begin by applying the Pythagorean inequality.  Let $x_q$ be the projection of $q$ onto $B(\mu_r, R_r)$.  Then, we have for any $r \in B(\mu_r, R_r)$ and $q \in B^\dagger(\mu_q, R_q)$:
+\begin{equation}
+d(r, q) \geq d(r, x_q) + d(x_q, q)
+\end{equation}
+We lower bound the first term with 0.  Therefore, we can lower bound the distance between the two balls by computing 
+\begin{equation}
+\min_{q \in B^\dagger(\mu_q, R_q)} d(x_q, q) \text{, such that } d(\mu_q, q) \leq R_q
+\label{eqn_lower_bd}
+\end{equation}
+
+
+\begin{claim}
+The minimizer $\hat{q}$ of Eqn.~\ref{eqn_lower_bd} satisfies
+\begin{equation}
+\hat{q}^\prime = \rho \mu_q + (1 - \rho) \mu_r
+\end{equation}
+\end{claim}
+\begin{proof}
+As in the paper, we take the Lagrange dual of Eqn.~\ref{eqn_lower_bd}, differentiate, and set equal to zero.  This gives 
+\begin{equation}
+\nabla f(x_q) - \nabla f(q) + \lambda \nabla f(\mu_q) - \lambda \nabla f(q) = 0
+\end{equation}
+Plugging in the fact that $x_q^\prime$ lies on the line between $q^\prime$ and $\mu_r^\prime$, and solving for $q'$, we get
+\begin{equation}
+q^\prime = \frac{\theta}{\lambda + \theta} \mu_r^\prime + \frac{\lambda}{\lambda + \theta} \mu_q^\prime
+\end{equation}
+A change of variables completes the proof. 
+\end{proof}
+
+I think in order to show that the minimum can be found in the same way as the point to ball distance, I need to show that the solution lies on the boundary of the query ball, and that the function is monotonic in it's parameter $\rho$. 
+
+
+
+
+%%%%%%%%%%%%%%%%%
+
+\section{Directed MST}
+
+What is the MST on a directed graph, anyway?
+
+What about this arboricity idea?
+
+Don't forget that it's a complete graph -- this should make it much simpler.
+
+
+
+
+
+
+\end{document}  

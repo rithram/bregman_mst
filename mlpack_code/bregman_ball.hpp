@@ -26,8 +26,6 @@ namespace bbtree {
     
     double radius_;
     
-    
-    
   public:
     
     BregmanBall(TDataType& center, double radius);
@@ -46,9 +44,16 @@ namespace bbtree {
     // computes minimum d(q,r) with r in this ball and q in the other
     double MinRightDist(BregmanBall& other);
     
+    double CanPruneRight(TDataType& q, double d_x_c_q);
+  
+    double CanPruneRight(double theta_l, double theta_r, TDataType& q,
+                         double d_x_c_q);
+  
+    const TDataType& centroid() const;
     
+    double centroid_prime() const;
     
-    
+    double radius() const;
     
     
   }; // class

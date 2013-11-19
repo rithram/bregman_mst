@@ -39,14 +39,13 @@ namespace bbtree {
   double BregmanBall<TDataType, TBregmanDiv>::CanPruneRight(double theta_l,
                                                             double theta_r,
                                                             TDataType& q,
-                                                            TDataType& x_c,
                                                             double d_x_c_q)
   {
     
     double theta = 0.5 * (theta_l + theta_r);
     double q_prime = TBregmanDiv::Gradient(q);
     
-    x_theta = TBregmanDiv::GradientConjugate(theta * centroid_prime_ + (1.0 - theta)*q_prime);
+    TData_type x_theta = TBregmanDiv::GradientConjugate(theta * centroid_prime_ + (1.0 - theta)*q_prime);
 
     double d_x_theta_mu = TBregmanDiv::Divergence(x_theta, centroid_);
     double d_x_theta_q = TBregmanDiv::Divergence(x_theta, q);
@@ -67,37 +66,34 @@ namespace bbtree {
     {
       
       // we're outside the ball, so move inward
-      return BinarySearch_(theta_l, theta, q, x_c, d_x_c_q);
+      return BinarySearch_(theta_l, theta, q, d_x_c_q);
       
     }
     else {
       
-      return BinarySearch_(theta, theta_r, q, x_c, d_x_c_q);
+      return BinarySearch_(theta, theta_r, q, d_x_c_q);
       
     }
     
   }
-
-  // Computes minimum d(x, point) for x in the ball
-  template <typename TDataType, class TBregmanDiv>
-  bool BregmanBall<TDataType, TBregmanDiv>::CanPruneRight(TDataType& point)
+  
+  template<typename TDataType, class TBregmanDiv>
+  const TDataType& BregmanBall<TDataType, TBregmanDiv>::centroid() const
   {
-    
-    
+    return centroid_;
   }
   
-  // Computes minimum d(point, x) for x in the ball
-  template <typename TDataType, class TBregmanDiv>
-  double BregmanBall<TDataType, TBregmanDiv>::MinLeftDist(TDataType& point);
+  template<typename TDataType, class TBregmanDiv>
+  double BregmanBall<TDataType, TBregmanDiv>::centroid_prime() const
+  {
+    return centroid_prime_;
+  }
   
-  // computes minimum d(q,r) with q in this ball and r in the other
-  template <typename TDataType, class TBregmanDiv>
-  double BregmanBall<TDataType, TBregmanDiv>::MinLeftDist(BregmanBall& other);
-  
-  // computes minimum d(q,r) with r in this ball and q in the other
-  template <typename TDataType, class TBregmanDiv>
-  double BregmanBall<TDataType, TBregmanDiv>::MinRightDist(BregmanBall& other);
-
+  template<typename TDataType, class TBregmanDiv>
+  double BregmanBall<TDataType, TBregmanDiv>::radius() const
+  {
+    return radius_;
+  }
   
   
 }

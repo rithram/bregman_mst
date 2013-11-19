@@ -10,11 +10,12 @@
 #define ____bregman_ball_tree__
 
 #include "bregman_ball.hpp"
+#include "two_means.hpp"
 
 namespace bbtree {
   
-  template <class TDataStorage, typename TDataType, class TBregmanDiv>
-  class BregmanBallTree<TDataStorage, TDataType, TBregmanDiv>
+  template <typename TDataType, class TBregmanDiv>
+  class BregmanBallTree<TDataType, TBregmanDiv>
   {
     
   private:
@@ -29,8 +30,8 @@ namespace bbtree {
     
     double radius_;
     
-    BregmanBallTree<TDataStorage, TDataType>* left_;
-    BregmanBallTree<TDataStorage, TDataType>* right_;
+    BregmanBallTree<TDataType, TBregmanDiv>* left_;
+    BregmanBallTree<TDataType, TBregmanDiv>* right_;
     
     
     BregmanBall<TBregmanDiv> bounding_ball_;
@@ -38,7 +39,7 @@ namespace bbtree {
     
   public:
     
-    BregmanBallTree();
+    BregmanBallTree(std::vector<TDataType>& data);
     
     ~BregmanBallTree();
     
@@ -58,15 +59,11 @@ namespace bbtree {
     double Radius() const;
     
     BregmanBall<TBregmanDiv>& Bound() const;
-    
-    
       
-      
-    
-    
-    
-    
   }; // class
+  
+  template<typename TDataType, class TBregmanDiv>
+  double* ConstructBBTree<TDataType, TBregmanDiv>(std::vector<TDataType>& data);
   
 } // namespace
 

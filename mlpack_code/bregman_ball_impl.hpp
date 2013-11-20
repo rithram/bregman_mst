@@ -16,7 +16,11 @@ namespace bbtree {
   :
   centroid_(center),
   radius_(radius)
-  {}
+  {
+    
+    centroid_prime_  = TBregmanDiv::Gradient(centroid_);
+    
+  }
   
   template <typename TDataType, class TBregmanDiv>
   ~BregmanBall<TDataType, TBregmanDiv>()
@@ -24,26 +28,27 @@ namespace bbtree {
   
   
   template<typename TDataType, class TBregmanDiv>
-  double BregmanBall<TDataType, TBregmanDiv>::CanPruneRight(TDataType& q,
-                                                            TDataType& x_c,
-                                                            double d_x_c_q)
+  bool BregmanBall<TDataType, TBregmanDiv>::CanPruneRight(TDataType& q,
+                                                          double d_x_c_q)
   {
 
+    TDataType q_prime = TBregmanDiv::Gradient(q);
+
     // initialize at the extreme values of theta
-    return CanPruneRight(0.0, 1.0, q, x_c, d_x_c_q);
+    return CanPruneRight(0.0, 1.0, q, q_prime, d_x_c_q);
     
   }
   
   
   template<typename TDataType, class TBregmanDiv>
-  double BregmanBall<TDataType, TBregmanDiv>::CanPruneRight(double theta_l,
+  bool BregmanBall<TDataType, TBregmanDiv>::CanPruneRight(double theta_l,
                                                             double theta_r,
                                                             TDataType& q,
+                                                            TDataType& q_prime,
                                                             double d_x_c_q)
   {
     
     double theta = 0.5 * (theta_l + theta_r);
-    double q_prime = TBregmanDiv::Gradient(q);
     
     TData_type x_theta = TBregmanDiv::GradientConjugate(theta * centroid_prime_ + (1.0 - theta)*q_prime);
 
@@ -66,12 +71,13 @@ namespace bbtree {
     {
       
       // we're outside the ball, so move inward
-      return BinarySearch_(theta_l, theta, q, d_x_c_q);
+      return CanPruneRight(theta_l, theta, q, q_prime, d_x_c_q);
       
     }
     else {
       
-      return BinarySearch_(theta, theta_r, q, d_x_c_q);
+      // we're inside the ball, move outward
+      return CanPruneRight(theta, theta_r, q, q_prime, d_x_c_q);
       
     }
     
@@ -84,7 +90,7 @@ namespace bbtree {
   }
   
   template<typename TDataType, class TBregmanDiv>
-  double BregmanBall<TDataType, TBregmanDiv>::centroid_prime() const
+  const TDataType& BregmanBall<TDataType, TBregmanDiv>::centroid_prime() const
   {
     return centroid_prime_;
   }

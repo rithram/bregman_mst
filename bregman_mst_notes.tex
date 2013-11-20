@@ -61,6 +61,17 @@ Rather than adding to the radius inside the definition of the ball (which requir
 Another possibility is to generalize the proof about the shortest distance between a point and a Bregman ball to the shortest distance between two Bregman balls. 
 
 
+\subsection*{Symmetrizations of the Bregman divergence}
+
+Possible symmetrizations of the Bregman divergence $d_f(x, y)$ induced by a convex and strictly differentiable functions $f$ (note that $d_f(x, y) = f(x) - f(y) - \langle x - y, \nabla f(y) \rangle$):
+\begin{itemize}
+\item Maximum: $\max(d_f(x,y), d_f(y, x)),$
+\item Minimum: $\min(d_f(x,y), d_f(y, x)),$
+\item Sum/average: $d_f(x,y) + d_f(y,x)$
+\item Jensen Bregman divergence: $\frac{1}{2} \left(d_f\left(x, \frac{x + y}{2} \right) + d_f\left(y, \frac{x + y}{2} \right) \right) = \frac{1}{2}\left(f(x) + f(y)\right) + f\left(\frac{x + y}{2} \right)$
+\end{itemize}
+None of these symmetrizations result in a metric (fortunately or unfortunately). So it would be interesting/hard if we could devise pruning rules/bounds for each. 
+
 
 %%%%%%%%%%%%
 

@@ -22,36 +22,26 @@ namespace bbtree {
     // The center and radius of the ball
     TDataType centroid_;
 
-    double centroid_prime_;
+    // The gradient lives in the same space as the data, since we take the 
+    // dot product of it with (x - y) in d_f
+    TDataType centroid_prime_;
     
     double radius_;
-    
+
+    bool CanPruneRight(double theta_l, double theta_r, TDataType& q,
+                       double d_x_c_q);
+      
   public:
     
     BregmanBall(TDataType& center, double radius);
     
     ~BregmanBall();
     
-    // Computes minimum d(x, point) for x in the ball
-    double MinRightDist(TDataType& point);
-    
-    // Computes minimum d(point, x) for x in the ball
-    double MinLeftDist(TDataType& point);
-    
-    // computes minimum d(q,r) with q in this ball and r in the other
-    double MinLeftDist(BregmanBall& other);
-    
-    // computes minimum d(q,r) with r in this ball and q in the other
-    double MinRightDist(BregmanBall& other);
-    
-    double CanPruneRight(TDataType& q, double d_x_c_q);
-  
-    double CanPruneRight(double theta_l, double theta_r, TDataType& q,
-                         double d_x_c_q);
+    bool CanPruneRight(TDataType& q, double d_x_c_q);
   
     const TDataType& centroid() const;
     
-    double centroid_prime() const;
+    const TDataType& centroid_prime() const;
     
     double radius() const;
     

@@ -63,7 +63,8 @@ namespace bbtree {
   }; // class
   
   template<typename TDataType, class TBregmanDiv>
-  double* ConstructBBTree<TDataType, TBregmanDiv>(std::vector<TDataType>& data);
+  BregmanBallTree<TDataType, TBregmanDiv>* ConstructBBTree<TDataType, TBregmanDiv>(std::vector<TDataType>& data,
+                                                                                   int leaf_size, double min_ball_width);
   
 } // namespace
 

@@ -175,4 +175,19 @@ Don't forget that it's a complete graph -- this should make it much simpler.
 Cayton's original paper mentions that building the tree bottom up might yield tighter bounds than the more efficient bottom down build.  We might be able to use our hierarchical clustering to improve the tree in this way, if there were some reason to do so.  
 
 
+\begin{table}
+\begin{tabular}{lccc}
+\hline \\
+Divergence & $\mathcal{X}$  & $f(x), x \in \mathcal{X}$ & $d_f(x, y), (x, y) \in \mathcal{X} \times \mathcal{X}$ \\ 
+\hline \\
+Squared Euclidean distance & $\mathbb{R}^d$ & $\frac{1}{2} \| x \|_2^2$ & $\frac{1}{2} \| x - y \|_2^2$ \\
+Itakura-Saito  & $\mathbb{R}_+^d$ & $- \sum_i \log x_i$ & $\sum_i \left(\frac{x_i}{y_i} - \log \frac{x_i}{y_i} - 1 \right)$ \\
+Kulback-Liebler & $d$-simplex & $\sum_i x_i \log_2 x_i $ & $\sum_i x_i \log_2 \frac{x_i}{y_i}$ \\
+Generalized I-divergence & $\mathbb{R}_+^d$ & $\sum_i x_i \log x_i$ & $\sum_i x_i \log \frac{x_i}{y_i} - \sum_i (x_i - y_i)$ \\
+\hline
+\end{tabular}
+\caption{Bregman divergences with generating functions}
+\label{tab:bdivs}
+\end{table}
+
 \end{document}  

@@ -8,6 +8,10 @@
 #ifndef _data_impl_hpp
 #define _data_impl_hpp
 
+#include <fstream> 
+#include <boost/lexical_cast.hpp>
+#include <boost/tokenizer.hpp>
+
 #include "data.hpp"
 
 namespace bmst
@@ -56,10 +60,11 @@ const T& Point<T>::operator[](const size_t i) const
 template<typename T>
 Point<T>& Point<T>::operator=(const Point<T>& point)
 {
-  n_dims_ = point.n_dims();
-  values_.resize(n_dims_);
-  for (size_t i = 0; i < n_dims_; i++) 
-    values_[i] = point.values_[i];
+  n_dims_ = point.n_dims_;
+  values_ = point.values_;
+  // values_.resize(n_dims_);
+  // for (size_t i = 0; i < n_dims_; i++) 
+  //   values_[i] = point.values_[i];
 
   return *this;
 }
@@ -203,43 +208,98 @@ Table<T>::Table() :
 template<typename T>
 Table<T>::Table(const std::vector<std::vector<T> >& points)
 {
-
+  for (size_t i = 0; i < points.size(); i++)
+    points_.push_back(Point<T>(points[i]));
+  n_points_ = points.size();
 }
 
 template<typename T>
-Table<T>::Table(const std::vector<Point<T> >& points)
-{
-
-}
+Table<T>::Table(const std::vector<Point<T> >& points) :
+  points_(points),
+  n_points_(points.size())
+{}
 
 template<typename T>
-Table<T>::Table(const Table& table)
+Table<T>::Table(const Table<T>& table)
 {
-
+  *this = table;
 }
 
 template<typename T>
 Table<T>::Table(const std::string& file_name) 
 {
+  points_.resize(0);
+  n_points_ = 0;
+  std::ifstream ifs;
+  ifs.open(file_name.c_str(), std::ifstream::in);
+  std::string line;
+  boost::char_separator<char> sep(" ,");
+  boost::tokenizer<boost::char_separator<char> > tok(line, sep);
+  std::vector<std::string> line_pieces;
+  std::vector<T> dims;
+  size_t n_dims = 0;
+  while (ifs.good()) {
+    std::getline(ifs, line);
+    tok.assign(line.begin(), line.end());
+    line_pieces.assign(tok.begin(), tok.end());
+    if (line_pieces.size() > 0) 
+    {
+      if (n_dims == 0) 
+        n_dims = line_pieces.size();
+      else 
+      {
+        if (n_dims != line_pieces.size()) 
+        {
+          std::cout << "[ERROR] Dimensionality of the points do not match." << 
+            std::endl;
+          exit(0);
+        }
+      }
 
+      if (dims.size() == 0)
+        dims.resize(n_dims);
+
+      for (size_t i = 0; i < n_dims; i++)
+        dims[i] = boost::lexical_cast<double>(line_pieces[i]);
+
+      Point<T> point(dims);
+      points_.push_back(dims);
+      ++n_points_;
+    }
+  }
+
+  ifs.close();
+  std::cout << "[INFO] " << n_points_ << " points loaded with " << n_dims <<
+    " dimensions each." << std::endl;
 }
 
 template<typename T>
 Point<T>& Table<T>::operator[](const size_t i)
 {
-
+  if (i >= n_points_) 
+  {
+    std::cout << "[ERROR] Table index out of range" << std::endl;
+    exit(1);
+  }
+  return points_[i];
 }
 
 template<typename T>
 const Point<T>& Table<T>::operator[](const size_t i) const
 {
-
+  if (i >= n_points_) 
+  {
+    std::cout << "[ERROR] Table index out of range" << std::endl;
+    exit(1);
+  }
+  return points_[i];
 }
 
 template<typename T>
-Table<T>& Table<T>::operator=(const Table& table) 
+Table<T>& Table<T>::operator=(const Table<T>& table) 
 {
-
+  n_points_ = table.n_points_;
+  points_ = table.points_;
 }
 
 }; // namespace

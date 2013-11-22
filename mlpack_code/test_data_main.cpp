@@ -20,7 +20,6 @@
 
 int main(int argc, char* argv[])
 {
-
   std::default_random_engine generator(time(NULL));
   std::uniform_real_distribution<double> randu(0, 10);
 
@@ -40,6 +39,7 @@ int main(int argc, char* argv[])
   for (size_t i = 0; i < 3000000; i++)
     d.push_back(randu(generator));
 
+  std::cout << "========== Testing the Point class ==========" << std::endl;
   std::cout << "Testing initializer(std::vector) + operator []"; 
   const bmst::Point<double> p(a);
   const bmst::Point<double> q(b);
@@ -182,8 +182,179 @@ int main(int argc, char* argv[])
   // // t += p;
   // // t -= p;
   // // dp = bmst::Dot(r, p);
-
   // std::cout << " .. DONE " << std::endl;
+  std::cout << "Testing the Point class ... DONE" << std::endl;
+
+  std::cout << "========== Testing the Table class ==========" << std::endl;
+
+  std::cout << "Testing the initializer(vector<vector<T> >) + operator[]";
+  std::vector<std::vector<float> > pointSetA;
+  std::vector<std::vector<float> > pointSetB;
+
+  for (size_t i = 0; i < 1000; i++) {
+    std::vector<float> point;
+    for (size_t j = 0; j < 100; j++) {
+      point.push_back(randu(generator));
+      // std::cout << " " << point[j];
+    }
+    pointSetA.push_back(point);
+    // std::cout << std::endl;
+  }
+
+  for (size_t i = 0; i < 500; i++) {
+    std::vector<float> point;
+    for (size_t j = 0; j < 5000; j++) {
+      point.push_back(randu(generator));
+      // std::cout << " " << point[j];
+    }
+    pointSetB.push_back(point);
+    // std::cout << std::endl;
+  }
+
+  const bmst::Table<float> pointSetP(pointSetA);
+  const bmst::Table<float> pointSetQ(pointSetB);
+
+  assert(pointSetA.size() == pointSetP.n_points());
+  for (size_t i = 0; i < pointSetA.size(); i++) {
+    for (size_t j = 0; j < pointSetA[i].size(); j++) {
+      assert(pointSetA[i].size() == pointSetP[i].n_dims());
+      assert(pointSetA[i][j] == pointSetP[i][j]);
+      // std::cout << " " << pointSetP[i][j];
+    }
+    // std::cout << std::endl;
+  }
+
+  assert(pointSetB.size() == pointSetQ.n_points());
+  for (size_t i = 0; i < pointSetB.size(); i++) {
+    for (size_t j = 0; j < pointSetB[i].size(); j++) {
+      assert(pointSetB[i].size() == pointSetQ[i].n_dims());
+      assert(pointSetB[i][j] == pointSetQ[i][j]);
+      // std::cout << " " << pointSetQ[i][j];
+    }
+    // std::cout << std::endl;
+  }
+  std::cout << " ... PASSED" << std::endl;
+
+  std::cout << "Testing the initializer(vector<Point<T> >) + operator[]";
+  std::vector<bmst::Point<float> > pointSetC;
+  std::vector<bmst::Point<float> > pointSetD;
+
+  for (size_t i = 0; i < 1000; i++) {
+    std::vector<float> point;
+    for (size_t j = 0; j < 100; j++) {
+      point.push_back(randu(generator));
+    }
+    const bmst::Point<float> t_point(point);
+    pointSetC.push_back(t_point);
+  }
+
+  for (size_t i = 0; i < 500; i++) {
+    std::vector<float> point;
+    for (size_t j = 0; j < 5000; j++) {
+      point.push_back(randu(generator));
+    }
+    const bmst::Point<float> t_point(point);
+    pointSetD.push_back(t_point);
+  }
+
+  const bmst::Table<float> pointSetR(pointSetC);
+  const bmst::Table<float> pointSetS(pointSetD);
+
+  assert(pointSetC.size() == pointSetR.n_points());
+  for (size_t i = 0; i < pointSetC.size(); i++) {
+    for (size_t j = 0; j < pointSetC[i].n_dims(); j++) {
+      assert(pointSetC[i].n_dims() == pointSetR[i].n_dims());
+      assert(pointSetC[i][j] == pointSetR[i][j]);
+    }
+  }
+
+  assert(pointSetD.size() == pointSetS.n_points());
+  for (size_t i = 0; i < pointSetD.size(); i++) {
+    for (size_t j = 0; j < pointSetD[i].n_dims(); j++) {
+      assert(pointSetD[i].n_dims() == pointSetS[i].n_dims());
+      assert(pointSetD[i][j] == pointSetS[i][j]);
+    }
+  }
+  std::cout << " ... PASSED" << std::endl;
+
+  std::cout << "Testing the initializer(Table<T>) + operator[]";
+  const bmst::Table<float> pointSetT(pointSetP);
+  const bmst::Table<float> pointSetU(pointSetQ);
+
+  assert(pointSetP.n_points() == pointSetT.n_points());
+  for (size_t i = 0; i < pointSetP.n_points(); i++) {
+    for (size_t j = 0; j < pointSetP[i].n_dims(); j++) {
+      assert(pointSetP[i].n_dims() == pointSetT[i].n_dims());
+      assert(pointSetP[i][j] == pointSetT[i][j]);
+    }
+  }
+
+  assert(pointSetQ.n_points() == pointSetU.n_points());
+  for (size_t i = 0; i < pointSetQ.n_points(); i++) {
+    for (size_t j = 0; j < pointSetQ[i].n_dims(); j++) {
+      assert(pointSetQ[i].n_dims() == pointSetU[i].n_dims());
+      assert(pointSetQ[i][j] == pointSetU[i][j]);
+    }
+  }
+  std::cout << " ... PASSED" << std::endl;
+
+  std::cout << "Testing the operator= + operator[]";
+  bmst::Table<float> pointSetV;
+  pointSetV = pointSetP;
+  const bmst::Table<float> pointSetW = pointSetQ;
+
+  assert(pointSetP.n_points() == pointSetV.n_points());
+  for (size_t i = 0; i < pointSetP.n_points(); i++) {
+    for (size_t j = 0; j < pointSetP[i].n_dims(); j++) {
+      assert(pointSetP[i].n_dims() == pointSetV[i].n_dims());
+      assert(pointSetP[i][j] == pointSetV[i][j]);
+    }
+  }
+
+  assert(pointSetQ.n_points() == pointSetW.n_points());
+  for (size_t i = 0; i < pointSetQ.n_points(); i++) {
+    for (size_t j = 0; j < pointSetQ[i].n_dims(); j++) {
+      assert(pointSetQ[i].n_dims() == pointSetW[i].n_dims());
+      assert(pointSetQ[i][j] == pointSetW[i][j]);
+    }
+  }
+  std::cout << " ... PASSED" << std::endl;
+
+  std::cout << "Testing the initializer(file name)" << std::endl;
+  {
+    std::cout << "Reading 'text_data.csv' .. " << std::endl;
+    const bmst::Table<double> tableFromFile("test_data.csv");
+    for (size_t i = 0; i < tableFromFile.n_points(); i++) {
+      for (size_t j = 0; j < tableFromFile[i].n_dims(); j++) {
+        std::cout << " " << tableFromFile[i][j];
+      }
+      std::cout << std::endl;
+    }
+    std::cout << "DONE" << std::endl;
+  }
+  {
+    std::cout << "Reading 'text_data1.csv' .. " << std::endl;
+    const bmst::Table<double> tableFromFile("test_data1.csv");
+    for (size_t i = 0; i < tableFromFile.n_points(); i++) {
+      for (size_t j = 0; j < tableFromFile[i].n_dims(); j++) {
+        std::cout << " " << tableFromFile[i][j];
+      }
+      std::cout << std::endl;
+    }
+    std::cout << "DONE" << std::endl;
+  }
+  {
+    std::cout << "Reading 'text_data2.txt' .. " << std::endl;
+    const bmst::Table<double> tableFromFile("test_data2.txt");
+    for (size_t i = 0; i < tableFromFile.n_points(); i++) {
+      for (size_t j = 0; j < tableFromFile[i].n_dims(); j++) {
+        std::cout << " " << tableFromFile[i][j];
+      }
+      std::cout << std::endl;
+    }
+    std::cout << "DONE" << std::endl;
+  }
+  std::cout << "Testing the Table class ... DONE" << std::endl;
 
   return 0;
 }

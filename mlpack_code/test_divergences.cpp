@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
   double eps = 1e-8;
   
   std::vector<double> x_vec(5, 0.1);
-  x_vec[0] = 0.5;
+  x_vec[0] = 0.6;
   Point<double> x(x_vec);
 
   std::vector<double> y_vec(5,0.2);  
@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
   std::cout << "Testing KL Divergence.\n";
   
   double div_x_y = KLDivergence<double>::Divergence(x,y);
-  double real_div_x_y = 0.18088649371309945;
+  double real_div_x_y = 0.3819085009768876;
 
   assert(fabs(div_x_y - real_div_x_y) < eps);
 
@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
   std::cout << "Testing L2 Divergence.\n";
   
   div_x_y = L2Divergence<double>::Divergence(x,y);
-  real_div_x_y = 0.5 * 0.13;
+  real_div_x_y = 0.1;
 
   assert(fabs(div_x_y - real_div_x_y) < eps);
   assert(fabs(div_x_y - L2Divergence<double>::Divergence(y,x)) < eps);

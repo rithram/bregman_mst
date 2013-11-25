@@ -14,7 +14,7 @@
 namespace bmst {
   
   template <typename T, class TBregmanDiv>
-  class BregmanBall <T, TBregmanDiv>
+  class BregmanBall 
   {
     
   private:
@@ -28,7 +28,7 @@ namespace bmst {
     
     double radius_;
 
-    bool CanPruneRight(double theta_l, double theta_r, Point<T>& q,
+    bool CanPruneRight(double theta_l, double theta_r, Point<T>& q, Point<T>& q_prime,
                        double d_x_c_q);
       
   public:

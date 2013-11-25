@@ -41,6 +41,9 @@ public:
 
   void ones();
   void ones(const size_t num_dims);
+  
+  void print() const;
+  
 };
 
 // Binary +

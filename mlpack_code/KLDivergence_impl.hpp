@@ -14,7 +14,7 @@ namespace bmst {
   
     for (int i = 0; i < x.n_dims(); i++)
     {
-      result += x[i] * log(x[i]/y[i]);
+      result += x[i] * log(x[i]/y[i]) + y[i] - x[i];
     }
     
     return result;

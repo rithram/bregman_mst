@@ -2,31 +2,31 @@
  * Implements the L2 Divergence
  */
 
+#ifndef L2DIVERGENCE_HPP_
+#define L2DIVERGENCE_HPP_
 
-namespace bbtree {
+#include "data.hpp"
+
+namespace bmst {
 
   // This doesn't actually need templates, since the data type needs to be in R^d for some d
   // Might be templated by the type I'm using for vectors, though? 
-  template<typename TDataType>
-  class L2Divergence<TDataType> {
+  template<typename T>
+  class L2Divergence
+  {
   
-  private:
-    
-    
-    
   public:
     
-
-    static double Divergence(TDataType& x, TDataType& y);
+    static double Divergence(Point<T>& x, Point<T>& y);
   
-    static double Gradient(TDataType& x);
+    static Point<T> Gradient(Point<T>& x);
   
-    static TDataType GradientConjugate(double x);
-  
-  
+    static Point<T> GradientConjugate(Point<T>& x);
   
   }; // class
 
 }
 
 #include "L2Divergence_impl.hpp"
+
+#endif

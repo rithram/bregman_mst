@@ -9,10 +9,10 @@
 #ifndef _bregman_ball_impl_hpp
 #define _bregman_ball_impl_hpp
 
-namespace bbtree {
+namespace bmst {
   
-  template <typename TDataType, class TBregmanDiv>
-  BregmanBall<TDataType, TBregmanDiv>(TDataType& center, double radius)
+  template <typename T, class TBregmanDiv>
+  BregmanBall<T, TBregmanDiv>(Point<T>& center, double radius)
   :
   centroid_(center),
   radius_(radius)
@@ -22,17 +22,17 @@ namespace bbtree {
     
   }
   
-  template <typename TDataType, class TBregmanDiv>
-  ~BregmanBall<TDataType, TBregmanDiv>()
+  template <typename T, class TBregmanDiv>
+  ~BregmanBall<T, TBregmanDiv>()
   {}
   
   
-  template<typename TDataType, class TBregmanDiv>
-  bool BregmanBall<TDataType, TBregmanDiv>::CanPruneRight(TDataType& q,
-                                                          double d_x_c_q)
+  template<typename T, class TBregmanDiv>
+  bool BregmanBall<T, TBregmanDiv>::CanPruneRight(Point<T>& q,
+                                                  double d_x_c_q)
   {
 
-    TDataType q_prime = TBregmanDiv::Gradient(q);
+    Point<T> q_prime = TBregmanDiv::Gradient(q);
 
     // initialize at the extreme values of theta
     return CanPruneRight(0.0, 1.0, q, q_prime, d_x_c_q);
@@ -40,17 +40,17 @@ namespace bbtree {
   }
   
   
-  template<typename TDataType, class TBregmanDiv>
-  bool BregmanBall<TDataType, TBregmanDiv>::CanPruneRight(double theta_l,
+  template<typename T, class TBregmanDiv>
+  bool BregmanBall<T, TBregmanDiv>::CanPruneRight(double theta_l,
                                                             double theta_r,
-                                                            TDataType& q,
-                                                            TDataType& q_prime,
+                                                            Point<T>& q,
+                                                            Point<T>& q_prime,
                                                             double d_x_c_q)
   {
     
     double theta = 0.5 * (theta_l + theta_r);
     
-    TData_type x_theta = TBregmanDiv::GradientConjugate(theta * centroid_prime_ + (1.0 - theta)*q_prime);
+    Point<T> x_theta = TBregmanDiv::GradientConjugate(theta * centroid_prime_ + (1.0 - theta)*q_prime);
 
     double d_x_theta_mu = TBregmanDiv::Divergence(x_theta, centroid_);
     double d_x_theta_q = TBregmanDiv::Divergence(x_theta, q);
@@ -83,26 +83,26 @@ namespace bbtree {
     
   }
   
-  template<typename TDataType, class TBregmanDiv>
-  const TDataType& BregmanBall<TDataType, TBregmanDiv>::centroid() const
+  template<typename T, class TBregmanDiv>
+  const Point<T>& BregmanBall<T, TBregmanDiv>::centroid() const
   {
     return centroid_;
   }
   
-  template<typename TDataType, class TBregmanDiv>
-  const TDataType& BregmanBall<TDataType, TBregmanDiv>::centroid_prime() const
+  template<typename T, class TBregmanDiv>
+  const Point<T>& BregmanBall<T, TBregmanDiv>::centroid_prime() const
   {
     return centroid_prime_;
   }
   
-  template<typename TDataType, class TBregmanDiv>
-  double BregmanBall<TDataType, TBregmanDiv>::radius() const
+  template<typename T, class TBregmanDiv>
+  double BregmanBall<T, TBregmanDiv>::radius() const
   {
     return radius_;
   }
   
   
-}
+} // namespace
 
 
 

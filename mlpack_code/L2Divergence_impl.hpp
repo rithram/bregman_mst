@@ -1,23 +1,34 @@
 
-namespace bbtree {
+#ifndef L2DIVERGENCE_IMPL_HPP_
+#define L2DIVERGENCE_IMPL_HPP_
 
-  static double L2Divergence<TDataType>::Divergence(TDataType& x, TDataType& y)
+namespace bmst {
+
+  template<typename T>
+  double L2Divergence<T>::Divergence(Point<T>& x, Point<T>& y)
   {
     
     // \frac{1}{2} \| x - y \|^2_2
-    return 0.5 * (x - y).trans() * (x - y);
+    Point<T> x_minus_y = x - y;
+    return 0.5 * Dot(x_minus_y, x_minus_y);
     
   }
 
 
-  // I don't think this should really be a double
-  static double L2Divergence<TDataType>::Gradient(TDataType& x)
+  template<typename T>
+  Point<T> L2Divergence<T>::Gradient(Point<T>& x)
   {
-    // 
-    return norm(x);
+
+    return x;
+
   }
 
-  static TDataType L2Divergence<TDataType>::GradientConjugate(double x);
+  template<typename T>
+  Point<T> L2Divergence<T>::GradientConjugate(Point<T>& x)
+  {
+    return x;
+  }
 
-  
 }
+
+#endif

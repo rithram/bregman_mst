@@ -2,32 +2,36 @@
  *  Implments the KL divergence 
  */
 
-namespace bbtree {
+#ifndef KL_DIVERGENCE_HPP_
+#define KL_DIVERGENCE_HPP_
+
+#include "data.hpp"
+#include <cmath>
+
+namespace bmst {
 
   /**
    * For now we assume that the distribution is discrete, and represented by a vector of doubles.
    * This means that the user who instantiates this as TBregmanDiv needs to instantiate 
    * TDataType as std::vector<double>
    */
+  template<typename T>
   class KLDivergence
   {
     
-  private:
-    
-    
-    
-    
   public:
     
-    static double Divergence(std::vector<double>& x, std::vector<double>& y);
+    static double Divergence(Point<T>& x, Point<T>& y);
     
-    static std::vector<double> Gradient(std::vector<double>& x);
+    static Point<T> Gradient(Point<T>& x);
   
-    static std::vector<double> GradientConjugate(std::vector<double>& x);
-  
-    
+    static Point<T> GradientConjugate(Point<T>& x);
     
   }; 
 
 }
 
+#include "KLDivergence_impl.hpp"
+
+
+#endif

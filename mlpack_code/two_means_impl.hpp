@@ -42,7 +42,7 @@ namespace bbtree {
          }
          
          // Someone was assigned to a new mean
-         if (old_assignments[i] != assignments[i]) 
+         if (converged && old_assignments[i] != assignments[i]) 
          {
            converged = false;
          }
@@ -86,7 +86,7 @@ namespace bbtree {
        
        while (assignements[left] == 1)
        {
-         left++
+         left++;
        }
        
        while(assignments[right] == 2)

@@ -147,6 +147,20 @@ void Point<T>::ones(const size_t num_dims)
   n_dims_ = num_dims;
 }
 
+template<typename T>
+void Point<T>::print() const
+{
+  
+  std::cout << "(";
+  for (int i = 0; i < n_dims_ - 1; i++) 
+  {
+    std::cout << values_[i] << ", ";
+  }
+  std::cout << values_[n_dims_ - 1] << ")\n";
+  
+}
+
+
 // Binary +
 template<typename TPoint>
 TPoint operator+(const TPoint& lhs, const TPoint& rhs)

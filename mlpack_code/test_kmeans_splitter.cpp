@@ -28,6 +28,7 @@ int main(int argc, char* argv[])
   // test where you are given 10 points with only 3 distinct points 
   // and the kmeans initialization should be able to catch this if 
   // we do 3-means clustering
+  std::cout << " ===============================================" << std::endl;
   std::cout << "Testing the k-means initialization with L2Div ..." << std::endl;
   {
     std::vector<double> p1 {3, 0, 1};
@@ -125,7 +126,7 @@ int main(int argc, char* argv[])
   }
   std::cout << "Testing the k-means initialization with L2Div ... DONE" << std::endl;
 
-
+  std::cout << " ===============================================" << std::endl;
   std::cout << "Testing the k-means initialization with KLDiv ..." << std::endl;
   {
     std::vector<double> p1 {3, 2, 1};
@@ -228,6 +229,7 @@ int main(int argc, char* argv[])
   // 3 means clustering is done (where there are 3 well separated 
   // clusters) and the clustering membership should find these three 
   // clusters
+  std::cout << " ===============================================" << std::endl;
   std::cout << "Testing the k-means clustering with L2Div ..." << std::endl;
   {
     bmst::Point<double> p11(std::vector<double>({3, 3}));
@@ -359,6 +361,7 @@ int main(int argc, char* argv[])
   // Test if the kmeans clustering works for a large set of random points
   // We will randomly select 1000 points in 5 dimensions and do a 
   // 2-means clustering
+  std::cout << " ===============================================" << std::endl;
   std::cout << "Testing kmeans clustering on 1000 points with KLDiv ... " << 
     std::endl;
   {
@@ -412,6 +415,204 @@ int main(int argc, char* argv[])
   std::cout << "Testing kmeans clustering on 1000 points with KLDiv ... " << 
     "DONE" << std::endl;
 
+  std::cout << " ===============================================" << std::endl;
+  std::cout << "Testing kmeans clustering initialization on a chunk within "
+    "1000 point table with KLDiv ... " << std::endl;
+  {
+    std::random_device rd;
+    std::default_random_engine gen(rd());
+    std::uniform_real_distribution<double> urand(1e-10, 1);
+    std::uniform_int_distribution<size_t> irand(2, 10);
+    std::vector<bmst::Point<double> > point_set;
+    for (size_t i = 0; i < 1000; i++)
+    {
+      std::vector<double> rand_vec;
+      for (size_t j = 0; j < 5; j++)
+        rand_vec.push_back(urand(gen));
+
+      point_set.push_back(bmst::Point<double>(rand_vec));
+    }
+    const bmst::Table<double> rand_table(point_set);
+
+    size_t k_for_kmeans = irand(gen);
+
+    bmst::KMeansSplitter<double, bmst::KLDivergence<double> > kmeans_test(k_for_kmeans, 0);
+    std::vector<size_t> membership;
+    std::vector<bmst::Point<double> > centers;
+    std::vector<double> radii;
+    size_t range_1 = irand(gen) * 100;
+    size_t range_2 = irand(gen) * 100;
+    size_t range_lb = std::min(range_1, range_2);
+    size_t range_ub = std::max(range_1, range_2);
+    std::cout << "Clustering (" << range_lb << ", " << range_ub << 
+      ") out of " << rand_table.n_points() << " points in " <<
+      rand_table[0].n_dims() << " dimensions each into " << k_for_kmeans << 
+      " clusters .. " << std::endl;
+    kmeans_test.PartitionData(
+        rand_table, 
+        range_lb, 
+        range_ub, 
+        membership, 
+        centers, 
+        radii);
+
+    if (range_ub - range_lb > k_for_kmeans)
+    {
+      assert(membership.size() == range_ub - range_lb);
+      assert(centers.size() == radii.size());
+      assert(centers.size() == k_for_kmeans);
+      for (size_t i = 0; i < centers.size(); i++) 
+      {
+        std::cout << "Center " << i + 1 << " [ ";
+        for (size_t j = 0; j < centers[i].n_dims(); j++)
+          std::cout << centers[i][j] << " ";
+        std::cout << "], Radius: " << radii[i] << std::endl;
+      }
+
+      // compute the actual centers as per the membership assignments
+      std::vector<bmst::Point<double> > actual_centers;
+      for (size_t i = 0; i < k_for_kmeans; i++)
+      {
+        bmst::Point<double> center;
+        center.zeros(5);
+        actual_centers.push_back(center);
+      }
+ 
+      std::vector<size_t> cluster_counts(k_for_kmeans, 0);
+      for (size_t i = 0; i < membership.size(); i++) 
+      {
+        actual_centers[membership[i]] += rand_table[range_lb + i];
+        cluster_counts[membership[i]]++;
+      }
+
+      for (size_t i = 0; i < cluster_counts.size(); i++) 
+      {
+        std::cout << "Cluster " << i + 1 << " has " << cluster_counts[i] << 
+          " points." << std::endl;
+        actual_centers[i] /= (double) cluster_counts[i];
+      }
+
+      // compute the radii of each cluster using these centers
+      std::vector<double> actual_radii(k_for_kmeans, 0);
+      for (size_t i = 0; i < membership.size(); i++)
+      {
+        double div_to_assigned_center = bmst::KLDivergence<double>::Divergence(
+            rand_table[range_lb + i], actual_centers[membership[i]]);
+        if (div_to_assigned_center > actual_radii[membership[i]])
+          actual_radii[membership[i]] = div_to_assigned_center;
+      }
+
+      // sort both radii vectors and compare
+      std::sort(radii.begin(), radii.end());
+      std::sort(actual_radii.begin(), actual_radii.end());
+      assert(radii.size() == actual_radii.size());
+      for (size_t i = 0; i < radii.size(); i++)
+        assert(fabs(radii[i] - actual_radii[i]) < 1e-10);
+    }
+  }
+  std::cout << "Testing kmeans clustering initialization on a chunk within a "
+    "1000 point set with KLDiv ... " << "DONE" << std::endl;
+
+  std::cout << " ===============================================" << std::endl;
+
+  std::cout << "Testing kmeans clustering on a chunk within "
+    "1000 point table with L2Div ... " << std::endl;
+  {
+    std::random_device rd;
+    std::default_random_engine gen(rd());
+    std::uniform_real_distribution<double> urand(1e-10, 1);
+    std::uniform_int_distribution<size_t> irand(2, 10);
+    std::vector<bmst::Point<double> > point_set;
+    for (size_t i = 0; i < 1000; i++)
+    {
+      std::vector<double> rand_vec;
+      for (size_t j = 0; j < 5; j++)
+        rand_vec.push_back(urand(gen));
+
+      point_set.push_back(bmst::Point<double>(rand_vec));
+    }
+    const bmst::Table<double> rand_table(point_set);
+
+    size_t k_for_kmeans = irand(gen);
+
+    bmst::KMeansSplitter<double, bmst::L2Divergence<double> > kmeans_test(k_for_kmeans);
+    std::vector<size_t> membership;
+    std::vector<bmst::Point<double> > centers;
+    std::vector<double> radii;
+    size_t range_1 = irand(gen) * 100;
+    size_t range_2 = irand(gen) * 100;
+    size_t range_lb = std::min(range_1, range_2);
+    size_t range_ub = std::max(range_1, range_2);
+    std::cout << "Clustering (" << range_lb << ", " << range_ub << 
+      ") out of " << rand_table.n_points() << " points in " <<
+      rand_table[0].n_dims() << " dimensions each into " << k_for_kmeans << 
+      " clusters .. " << std::endl;
+    kmeans_test.PartitionData(
+        rand_table, 
+        range_lb, 
+        range_ub, 
+        membership, 
+        centers, 
+        radii);
+
+    if (range_ub - range_lb > k_for_kmeans)
+    {
+      assert(membership.size() == range_ub - range_lb);
+      assert(centers.size() == radii.size());
+      assert(centers.size() == k_for_kmeans);
+      for (size_t i = 0; i < centers.size(); i++) 
+      {
+        std::cout << "Center " << i + 1 << " [ ";
+        for (size_t j = 0; j < centers[i].n_dims(); j++)
+          std::cout << centers[i][j] << " ";
+        std::cout << "], Radius: " << radii[i] << std::endl;
+      }
+
+      // compute the actual centers as per the membership assignments
+      std::vector<bmst::Point<double> > actual_centers;
+      for (size_t i = 0; i < k_for_kmeans; i++)
+      {
+        bmst::Point<double> center;
+        center.zeros(5);
+        actual_centers.push_back(center);
+      }
+ 
+      std::vector<size_t> cluster_counts(k_for_kmeans, 0);
+      for (size_t i = 0; i < membership.size(); i++) 
+      {
+        actual_centers[membership[i]] += rand_table[range_lb + i];
+        cluster_counts[membership[i]]++;
+      }
+
+      for (size_t i = 0; i < cluster_counts.size(); i++) 
+      {
+        std::cout << "Cluster " << i + 1 << " has " << cluster_counts[i] << 
+          " points." << std::endl;
+        actual_centers[i] /= (double) cluster_counts[i];
+      }
+
+      // compute the radii of each cluster using these centers
+      std::vector<double> actual_radii(k_for_kmeans, 0);
+      for (size_t i = 0; i < membership.size(); i++)
+      {
+        double div_to_assigned_center = bmst::L2Divergence<double>::Divergence(
+            rand_table[range_lb + i], actual_centers[membership[i]]);
+        if (div_to_assigned_center > actual_radii[membership[i]])
+          actual_radii[membership[i]] = div_to_assigned_center;
+      }
+
+      // sort both radii vectors and compare
+      std::sort(radii.begin(), radii.end());
+      std::sort(actual_radii.begin(), actual_radii.end());
+      assert(radii.size() == actual_radii.size());
+      for (size_t i = 0; i < radii.size(); i++)
+        assert(fabs(radii[i] - actual_radii[i]) < 1e-10);
+    }
+  }
+  std::cout << "Testing kmeans clustering on a chunk within a "
+    "1000 point set with L2Div ... " << "DONE" << std::endl;
+
+  std::cout << " ===============================================" << std::endl;
 
   return 0;
 }

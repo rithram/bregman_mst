@@ -30,6 +30,13 @@ void KMeansSplitter<T, TBregmanDiv>::PartitionData(
     std::vector<Point<T> >& centers,
     std::vector<double>& radii) 
 {
+  if (end_index <= begin_index)
+  {
+    std::cout << "[ERROR] Requested begin index: " << begin_index << ", " << 
+      "Requested end index: " << end_index << " -- can't really cluster " 
+      "this chunk." << std::endl;
+    return;
+  }
   // initialize the centers and such
   membership.resize(end_index - begin_index);
   size_t n_dims = data[begin_index].n_dims();
@@ -45,7 +52,7 @@ void KMeansSplitter<T, TBregmanDiv>::PartitionData(
   points_already_picked.insert(first_point);
   std::vector<double> div_to_closest_mean(
       end_index - begin_index, std::numeric_limits<double>::max());
-  div_to_closest_mean[first_point] = 0;
+  div_to_closest_mean[first_point - begin_index] = 0;
   for (size_t j = 1; j < k_; j++) 
   {
     // compute distances to the previous center

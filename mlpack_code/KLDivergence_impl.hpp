@@ -5,7 +5,7 @@
 namespace bmst {
 
   template<typename T>
-  double KLDivergence<T>::Divergence(Point<T>& x, Point<T>& y)
+  double KLDivergence<T>::Divergence(const Point<T>& x, const Point<T>& y)
   {
   
     assert(x.n_dims() == y.n_dims());
@@ -22,7 +22,7 @@ namespace bmst {
   }
 
   template<typename T>
-  Point<T> KLDivergence<T>::Gradient(Point<T>& x)
+  Point<T> KLDivergence<T>::Gradient(const Point<T>& x)
   {
 
     Point<T> result;
@@ -38,7 +38,7 @@ namespace bmst {
   }
 
   template<typename T>
-  Point<T> KLDivergence<T>::GradientConjugate(Point<T>& x)
+  Point<T> KLDivergence<T>::GradientConjugate(const Point<T>& x)
   {
   
     Point<T> result;

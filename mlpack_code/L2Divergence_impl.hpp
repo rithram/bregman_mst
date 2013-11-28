@@ -5,7 +5,8 @@
 namespace bmst {
 
   template<typename T>
-  double L2Divergence<T>::Divergence(Point<T>& x, Point<T>& y)
+  // double L2Divergence<T>::Divergence(Point<T>& x, Point<T>& y)
+  double L2Divergence<T>::Divergence(const Point<T>& x, const Point<T>& y)
   {
     
     // \frac{1}{2} \| x - y \|^2_2
@@ -16,7 +17,8 @@ namespace bmst {
 
 
   template<typename T>
-  Point<T> L2Divergence<T>::Gradient(Point<T>& x)
+  // Point<T> L2Divergence<T>::Gradient(Point<T>& x)
+  Point<T> L2Divergence<T>::Gradient(const Point<T>& x)
   {
 
     return x;
@@ -24,7 +26,8 @@ namespace bmst {
   }
 
   template<typename T>
-  Point<T> L2Divergence<T>::GradientConjugate(Point<T>& x)
+  // Point<T> L2Divergence<T>::GradientConjugate(Point<T>& x)
+  Point<T> L2Divergence<T>::GradientConjugate(const Point<T>& x)
   {
     return x;
   }

@@ -6,8 +6,8 @@
  * matrix operations. 
  */
 
-#ifndef _data_hpp
-#define _data_hpp
+#ifndef BMST_DATA_HPP_
+#define BMST_DATA_HPP_
 
 #include <string>
 #include <vector>

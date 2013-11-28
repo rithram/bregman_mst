@@ -17,11 +17,16 @@ namespace bmst {
   
   public:
     
-    static double Divergence(Point<T>& x, Point<T>& y);
+    // static double Divergence(Point<T>& x, Point<T>& y);
+    static double Divergence(const Point<T>& x, const Point<T>& y);
+    // static double Divergence(Point<T>& x, const Point<T>& y);
+    // static double Divergence(const Point<T>& x, Point<T>& y);
   
-    static Point<T> Gradient(Point<T>& x);
+    // static Point<T> Gradient(Point<T>& x);
+    static Point<T> Gradient(const Point<T>& x);
   
-    static Point<T> GradientConjugate(Point<T>& x);
+    // static Point<T> GradientConjugate(Point<T>& x);
+    static Point<T> GradientConjugate(const Point<T>& x);
   
   }; // class
 

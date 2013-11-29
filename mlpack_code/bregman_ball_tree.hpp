@@ -100,23 +100,27 @@ public:
   // point-ball right-prune
   bool CanPruneRight(
       const Point<T>& q, 
+      const double q_div_to_best_candidate,
       const double div_to_center = std::numeric_limits<double>::max());
 
   // TO-DO: if needed, implement point-ball left-prune
   // API might change
   bool CanPruneLeft(
       const Point<T>& q, 
+      const double q_div_to_best_candidate,
       const double div_to_center = std::numeric_limits<double>::max());
 
   // TO-DO: ball-ball right prune
   bool CanPruneRight(
       const BregmanBallTree<T, TBregmanDiv, TSplitter>& other_node,
+      const double node_max_div_to_best_candidate,
       const double node_div_to_center = std::numeric_limits<double>::max());
 
   // TO-DO: if needed, ball-ball left prune
   // API might change
   bool CanPruneLeft(
       const BregmanBallTree<T, TBregmanDiv, TSplitter>& other_node,
+      const double node_max_div_to_best_candidate,
       const double center_div_to_node = std::numeric_limits<double>::max());
 }; // class
   

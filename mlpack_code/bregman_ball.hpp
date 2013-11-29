@@ -27,25 +27,25 @@ private:
   double radius_;
 
   bool CanPruneRight(
-      double theta_l, 
-      double theta_r, 
-      Point<T>& q, 
-      Point<T>& q_prime,
-      double d_x_c_q);
+      const double theta_l, 
+      const double theta_r, 
+      const Point<T>& q, 
+      const Point<T>& q_prime,
+      const double q_div_to_best_candidate);
     
 public:
   BregmanBall();
-  BregmanBall(Point<T>& center, double radius);
+  BregmanBall(const Point<T>& center, const double radius);
   
   ~BregmanBall();
   
-  bool CanPruneRight(Point<T>& q, double d_x_c_q);
+  bool CanPruneRight(const Point<T>& q, const double q_div_to_best_candidate);
 
   const Point<T>& centroid() const;
   
   const Point<T>& centroid_prime() const;
   
-  double radius() const;
+  const double radius() const;
 }; // class
 
 } // namespace

@@ -235,24 +235,20 @@ BregmanBallTree<T, TBregmanDiv, TSplitter>::~BregmanBallTree()
 template <typename T, class TBregmanDiv, class TSplitter>
 bool BregmanBallTree<T, TBregmanDiv, TSplitter>::CanPruneRight(
     const Point<T>& q,
-    const double div_to_center)
+    const double q_div_to_best_candidate,
+    const double q_div_to_center)
 {
-  // The option where this function can be called with 
-  // the divergence(q, centroid) if it is already computed 
-  if (div_to_center < std::numeric_limits<double>::max())
-    // call bounding_ball CanPruneRight function
-    return bounding_ball_.CanPruneRight(q, div_to_center);
-  else
-    // Compute right divergence to node center
-    // call bounding_ball CanPruneRight function
-    return bounding_ball_.CanPruneRight(
-        q, TBregmanDiv::Divergence(q, bounding_ball_.centroid()));
+  // We have the option of precomputing the divergence of q to 
+  // the node center is we need to.
+  // For now, just use the q_div_to_best_candidate
+  return bounding_ball_.CanPruneRight(q, q_div_to_best_candidate);
 }
 
 template <typename T, class TBregmanDiv, class TSplitter>
 bool BregmanBallTree<T, TBregmanDiv, TSplitter>::CanPruneLeft(
     const Point<T>& q,
-    const double div_to_center)
+    const double q_div_to_best_candidate,
+    const double q_div_to_center)
 {
   // TO BE FILLED IN (always return false for now)
   return false;
@@ -261,6 +257,7 @@ bool BregmanBallTree<T, TBregmanDiv, TSplitter>::CanPruneLeft(
 template <typename T, class TBregmanDiv, class TSplitter>
 bool BregmanBallTree<T, TBregmanDiv, TSplitter>::CanPruneRight(
     const BregmanBallTree<T, TBregmanDiv, TSplitter>& other_node,
+    const double node_max_div_to_best_candidate,
     const double node_div_to_center)
 {
   // TO BE FILLED IN (always return false for now)
@@ -270,6 +267,7 @@ bool BregmanBallTree<T, TBregmanDiv, TSplitter>::CanPruneRight(
 template <typename T, class TBregmanDiv, class TSplitter>
 bool BregmanBallTree<T, TBregmanDiv, TSplitter>::CanPruneLeft(
     const BregmanBallTree<T, TBregmanDiv, TSplitter>& other_node,
+    const double node_max_div_to_best_candidate,
     const double center_div_to_node)
 {
   // TO BE FILLED IN (always return false for now)

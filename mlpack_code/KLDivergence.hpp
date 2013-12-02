@@ -10,26 +10,21 @@
 
 namespace bmst {
 
-  /**
-   * For now we assume that the distribution is discrete, and represented by a vector of doubles.
-   * This means that the user who instantiates this as TBregmanDiv needs to instantiate 
-   * TDataType as std::vector<double>
-   */
-  template<typename T>
-  class KLDivergence
-  {
-    
-  public:
-    
-    static double Divergence(Point<T>& x, Point<T>& y);
-    
-    static Point<T> Gradient(Point<T>& x);
-  
-    static Point<T> GradientConjugate(Point<T>& x);
-    
-  }; 
+/**
+ * For now we assume that the distribution is discrete, and represented by a vector of doubles.
+ * This means that the user who instantiates this as TBregmanDiv needs to instantiate 
+ * TDataType as std::vector<double>
+ */
+template<typename T>
+class KLDivergence
+{
+public:
+  static double Divergence(const Point<T>& x, const Point<T>& y);
+  static Point<T> Gradient(const Point<T>& x);
+  static Point<T> GradientConjugate(const Point<T>& x);
+}; // class KLDivergence 
 
-}
+} // namespace
 
 #include "KLDivergence_impl.hpp"
 

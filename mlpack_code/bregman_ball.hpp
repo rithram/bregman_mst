@@ -6,52 +6,50 @@
 //
 //
 
-#ifndef _bregman_ball_hpp
-#define _bregman_ball_hpp
+#ifndef BMST_BREGMAN_BALL_HPP_
+#define BMST_BREGMAN_BALL_HPP_
 
 #include "data.hpp"
 
 namespace bmst {
-  
-  template <typename T, class TBregmanDiv>
-  class BregmanBall 
-  {
-    
-  private:
-    
-    // The center and radius of the ball
-    Point<T> centroid_;
 
-    // The gradient lives in the same space as the data, since we take the 
-    // dot product of it with (x - y) in d_f
-    Point<T> centroid_prime_;
-    
-    double radius_;
+template <typename T, class TBregmanDiv>
+class BregmanBall 
+{
+private:
+  // The center and radius of the ball
+  Point<T> centroid_;
 
-    bool CanPruneRight(double theta_l, double theta_r, Point<T>& q, Point<T>& q_prime,
-                       double d_x_c_q);
-      
-  public:
-    
-    BregmanBall(Point<T>& center, double radius);
-    
-    ~BregmanBall();
-    
-    bool CanPruneRight(Point<T>& q, double d_x_c_q);
+  // The gradient lives in the same space as the data, since we take the 
+  // dot product of it with (x - y) in d_f
+  Point<T> centroid_prime_;
   
-    const Point<T>& centroid() const;
+  double radius_;
+
+  bool CanPruneRight(
+      const double theta_l, 
+      const double theta_r, 
+      const Point<T>& q, 
+      const Point<T>& q_prime,
+      const double q_div_to_best_candidate);
     
-    const Point<T>& centroid_prime() const;
-    
-    double radius() const;
-    
-    
-  }; // class
+public:
+  BregmanBall();
+  BregmanBall(const Point<T>& center, const double radius);
   
+  ~BregmanBall();
+  
+  bool CanPruneRight(const Point<T>& q, const double q_div_to_best_candidate);
+
+  const Point<T>& centroid() const;
+  
+  const Point<T>& centroid_prime() const;
+  
+  const double radius() const;
+}; // class
+
 } // namespace
 
-
 #include "bregman_ball_impl.hpp"
-
 
 #endif

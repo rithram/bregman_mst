@@ -5,8 +5,8 @@
  * Implementation of the functions defined in data.hpp
  */
 
-#ifndef _data_impl_hpp
-#define _data_impl_hpp
+#ifndef BMST_DATA_IMPL_HPP_
+#define BMST_DATA_IMPL_HPP_
 
 #include <fstream> 
 #include <boost/lexical_cast.hpp>

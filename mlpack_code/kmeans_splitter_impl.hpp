@@ -10,8 +10,6 @@
 #include <random>
 #include <set>
 
-#include "kmeans_splitter.hpp"
-
 namespace bmst {
 
 template<typename T, class TBregmanDiv>

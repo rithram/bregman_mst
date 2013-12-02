@@ -323,7 +323,7 @@ int main(int argc, char* argv[])
   std::cout << "Testing the initializer(file name)" << std::endl;
   {
     std::cout << "Reading 'test_data.csv' .. " << std::endl;
-    const bmst::Table<double> tableFromFile("test_data.csv");
+    const bmst::Table<double> tableFromFile("../test_data.csv");
     for (size_t i = 0; i < tableFromFile.n_points(); i++) {
       for (size_t j = 0; j < tableFromFile[i].n_dims(); j++) {
         std::cout << " " << tableFromFile[i][j];
@@ -334,7 +334,7 @@ int main(int argc, char* argv[])
   }
   {
     std::cout << "Reading 'test_data1.csv' .. " << std::endl;
-    const bmst::Table<double> tableFromFile("test_data1.csv");
+    const bmst::Table<double> tableFromFile("../test_data1.csv");
     for (size_t i = 0; i < tableFromFile.n_points(); i++) {
       for (size_t j = 0; j < tableFromFile[i].n_dims(); j++) {
         std::cout << " " << tableFromFile[i][j];
@@ -345,7 +345,7 @@ int main(int argc, char* argv[])
   }
   {
     std::cout << "Reading 'test_data2.txt' .. " << std::endl;
-    const bmst::Table<double> tableFromFile("test_data2.txt");
+    const bmst::Table<double> tableFromFile("../test_data2.txt");
     for (size_t i = 0; i < tableFromFile.n_points(); i++) {
       for (size_t j = 0; j < tableFromFile[i].n_dims(); j++) {
         std::cout << " " << tableFromFile[i][j];

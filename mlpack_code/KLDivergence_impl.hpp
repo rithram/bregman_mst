@@ -14,9 +14,25 @@ double KLDivergence<T>::Divergence(const Point<T>& x, const Point<T>& y)
 
   for (int i = 0; i < x.n_dims(); i++)
   {
-    result += x[i] * log(x[i]/y[i]) + y[i] - x[i];
-  }
-  
+
+    bool x_zero = (fabs(x[i]) < std::numeric_limits<double>::epsilon());
+    bool y_zero = (fabs(y[i]) < std::numeric_limits<double>::epsilon());
+    
+    if (!(!y_zero || x_zero)) // y == 0 should imply x == 0, if it doesn't handle specially
+    {
+      result = x[i] > 0 ? -DBL_MAX : DBL_MAX;
+    }
+    else if (x_zero) // then they're both zero 
+    {
+      // 0 log 0 is 0 for KL divergence
+      result += y[i];
+    }
+    else {
+      result += x[i] * log(x[i]/y[i]) + y[i] - x[i];      
+    }
+    
+  } // loop over features
+    
   return result;
 
 }

@@ -31,7 +31,7 @@ private:
       const double theta_r, 
       const Point<T>& q, 
       const Point<T>& q_prime,
-      const double q_div_to_best_candidate);
+      const double q_div_to_best_candidate) const;
     
 public:
   BregmanBall();
@@ -39,7 +39,11 @@ public:
   
   ~BregmanBall();
   
-  bool CanPruneRight(const Point<T>& q, const double q_div_to_best_candidate);
+  bool CanPruneRight(const Point<T>& q, const double q_div_to_best_candidate) const;
+  
+  // We'll precompute this divergence to prioritize the tree search, so this function allows us not to compute
+  // the distance to the centroid again
+  bool CanPruneRight(const Point<T>& q, const double q_div_to_best_candidate, const double q_div_to_centroid) const;
 
   const Point<T>& centroid() const;
   

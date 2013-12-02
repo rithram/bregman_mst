@@ -36,6 +36,41 @@ int main(int argc, char* argv[])
     assert (fabs(y[i] - y_prime_inv[i]) < eps);
   }
   
+  
+  std::vector<double> a_vec(5, 1.0);
+  std::vector<double> b_vec(5, 2.0);
+  
+  a_vec[3] = 0.0;
+  
+  Point<double> a(a_vec);
+  Point<double> b(b_vec);
+  
+  double div_a_b = KLDivergence<double>::Divergence(a, b);
+  double real_div_a_b = 3.2274112777602184;
+  
+  
+  assert(fabs(div_a_b - real_div_a_b) < eps);
+  
+  a[3] = 1.0;
+  b[2] = 0.0;
+  
+  div_a_b = KLDivergence<double>::Divergence(a,b);
+  
+  assert(div_a_b == -DBL_MAX);
+  
+  a[2] = -1.0;
+  div_a_b = KLDivergence<double>::Divergence(a,b);
+  
+  assert(div_a_b == DBL_MAX);
+  
+  
+  a[2] = 0.0;
+  
+  div_a_b = KLDivergence<double>::Divergence(a,b);
+  real_div_a_b = 1.2274112777602184;
+  
+  assert(fabs(real_div_a_b - div_a_b) < eps);
+  
   std::cout << "KL Divergence passed.\n";
 
   std::cout << "Testing L2 Divergence.\n";

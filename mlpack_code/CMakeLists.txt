@@ -15,3 +15,6 @@ add_executable(test_bregman_ball test_bregman_ball.cpp)
 add_executable(test_kmeans_splitter test_kmeans_splitter.cpp)
 
 add_executable(test_bbtree_main test_bbtree_main.cpp)
+
+add_executable(test_leftnn_search test_leftnn_search.cpp)
+

@@ -35,15 +35,24 @@ BregmanBall<T, TBregmanDiv>::~BregmanBall()
 
 template<typename T, class TBregmanDiv>
 bool BregmanBall<T, TBregmanDiv>::CanPruneRight(
-    const Point<T>& q, const double q_div_to_best_candidate)
+    const Point<T>& q, const double q_div_to_best_candidate) const
 {
+  
+  double d_q_mu = TBregmanDiv::Divergence(q, centroid_);
+  //std::cout << "d_q_mu: " << d_q_mu << ", radius: " << radius_ << ", q_div_to_best_candidate: " << q_div_to_best_candidate << "\n";
+  return CanPruneRight(q, q_div_to_best_candidate, d_q_mu);
+  
+}
+
+template<typename T, class TBregmanDiv>
+bool BregmanBall<T, TBregmanDiv>::CanPruneRight(const Point<T>& q, const double q_div_to_best_candidate, const double q_div_to_centroid) const
+{
+  
   // if the query is in the ball, then theta > 1, so don't recurse
   // also, if the query is closer to the centroid than to its candidate, 
   // we can't prune
   // even with theta = 0, so don't bother
-  double d_q_mu = TBregmanDiv::Divergence(q, centroid_);
-  //std::cout << "d_q_mu: " << d_q_mu << ", radius: " << radius_ << ", q_div_to_best_candidate: " << q_div_to_best_candidate << "\n";
-  if (d_q_mu <= radius_ || d_q_mu < q_div_to_best_candidate)
+  if (q_div_to_centroid <= radius_ || q_div_to_centroid < q_div_to_best_candidate)
   {
     return false;
   }  
@@ -52,8 +61,8 @@ bool BregmanBall<T, TBregmanDiv>::CanPruneRight(
 
   // initialize at the extreme values of theta
   return CanPruneRight(0.0, 1.0, q, q_prime, q_div_to_best_candidate);
+  
 }
-
 
 template<typename T, class TBregmanDiv>
 bool BregmanBall<T, TBregmanDiv>::CanPruneRight(
@@ -61,7 +70,7 @@ bool BregmanBall<T, TBregmanDiv>::CanPruneRight(
     const double theta_r,
     const Point<T>& q,
     const Point<T>& q_prime,
-    const double q_div_to_best_candidate)
+    const double q_div_to_best_candidate) const 
 {
   double theta = 0.5 * (theta_l + theta_r);
   

@@ -47,12 +47,24 @@ Does this somehow invoke the triangle inequality? I believe it does.  We are say
 I may be able to get around this with the analog to the Pythagorean theorem for Bregman divergences. 
 
 \begin{theorem}
+\textbf{Pythagorean Thm. for Bregman Divergences.}
 Let $C$ be a convex set and let $x \in C$. Then, for any $z$, we have 
 \begin{equation}
 d_f(x,z) \geq d_f(x,y) + d_f(y,z)
 \end{equation}
 where $y = \arg \min_{y \in C} d_f(y,z)$ is the projection of $z$ onto $C$.
 \end{theorem}
+
+Let $B(\mu_r, R_r)$ and $B^\dagger(\mu_q, R_q)$ be two Bregman balls.  (To-do: show that $B^\dagger$ is convex).
+
+Goal: show that the minimizer $\hat{r}$ in $B$ to $\mu_q$ and $\hat{q}$ in $B^\dagger$ to $\mu_r$ are the minimizers of the pairwise distances. 
+
+Bound $d(q, r)$ such that $q \in B^\dagger(\mu_q, R_q)$ and $r \in B(\mu_r, R_r)$.  
+
+
+
+
+
 
 Rather than adding to the radius inside the definition of the ball (which requires the triangle inequality), I can use this?
 
@@ -72,6 +84,30 @@ Possible symmetrizations of the Bregman divergence $d_f(x, y)$ induced by a conv
 \end{itemize}
 None of these symmetrizations result in a metric (fortunately or unfortunately). So it would be interesting/hard if we could devise pruning rules/bounds for each. 
 
+
+%%%%%%%%%%%%%%
+
+\subsection{Notation}
+
+Since Bregman divergences are generally asymmetric, we'll need some terminology to determine whether we're interested in $d(x, y)$ or $d(y, x)$ for a given $x$ and $y$. 
+
+We'll start by following Cayton's notation and define the \emph{left} Nearest Neighbor problem as the task of finding
+\begin{equation}
+x_q = \arg \min_x d_f(x, q)
+\end{equation}
+We will apply this convention throughout.  Therefore, the \emph{left} anything will refer to putting the ``reference'' on the left and the ``query'' on the right.  
+
+In the case of balls, we think of the points in the set as ``queries'' and the centroid as the ``reference''.
+Therefore, we define the \emph{right} Bregman Ball with center $\mu$ and radius $R$ to be the set 
+\begin{equation}
+B_r(\mu, R) = \{x : d(x, \mu) \leq R \}
+\end{equation}
+and the \emph{left} Bregman Ball with center $\nu$ and radius $R^\prime$ to be the set
+\begin{equation}
+B_l(\nu, R^\prime) = \{ x : d(\nu, x) \leq R^\prime \}
+\end{equation}
+
+With this convention in mind, we can define the left and right NN problem, and also left and right pruning rules.  A left pruning rule considers divergences of the form $d(x, q)$ for a query point $q$. 
 
 %%%%%%%%%%%%
 
@@ -114,13 +150,13 @@ B^\dagger(\mu, R) & = & \{ x : d(\mu, x) \leq R \}
 
 Consider the all left-nearest-neighbors task.  For all $q$, find the $r$ that minimizes $d(r,q)$.
 
-Let $B(\mu_r, R_r)$ and $B^\dagger(\mu_q, R_q)$ be Bregman balls enclosing the set of references and queries. Let each query $q$ have a candidate nearest neighbor $c_q$, with $d(n_q, q) = c_q$.  Let $c^* = \min_{q} c_q$.  
+Let $B(\mu_r, R_r)$ and $B^\dagger(\mu_q, R_q)$ be Bregman balls enclosing the set of references and queries. Let each query $q$ have a candidate nearest neighbor $n_q$, with $d(n_q, q) = c_q$.  Let $c^* = \min_{q} c_q$.  
 
 Then, we can prune this pair of nodes if 
 \begin{equation}
 \min_q \min_r d(r,q) > c^*
 \end{equation}
-So, we seek a lower bound on the quantity on the left.  If this lower bound is greater than $c^*$.
+So, we seek a lower bound on the quantity on the left.  If this lower bound is greater than $c^*$, we can prune.
 
 We begin by applying the Pythagorean inequality.  Let $x_q$ be the projection of $q$ onto $B(\mu_r, R_r)$.  Then, we have for any $r \in B(\mu_r, R_r)$ and $q \in B^\dagger(\mu_q, R_q)$:
 \begin{equation}
@@ -136,7 +172,7 @@ We lower bound the first term with 0.  Therefore, we can lower bound the distanc
 \begin{claim}
 The minimizer $\hat{q}$ of Eqn.~\ref{eqn_lower_bd} satisfies
 \begin{equation}
-\hat{q}^\prime = \rho \mu_q + (1 - \rho) \mu_r
+\hat{q}^\prime = \rho \mu_q^\prime + (1 - \rho) \mu_r^\prime
 \end{equation}
 \end{claim}
 \begin{proof}
@@ -153,6 +189,39 @@ A change of variables completes the proof.
 
 I think in order to show that the minimum can be found in the same way as the point to ball distance, I need to show that the solution lies on the boundary of the query ball, and that the function is monotonic in it's parameter $\rho$. 
 
+
+
+\begin{algorithm}
+\caption{\textbf{CanPruneDual}($\theta_l, \theta_r, c^*, \mu_q, R_q, \mu_r, R_r)$}
+\begin{algorithmic}[5]
+\STATE $\theta = \frac{\theta_l + \theta_r}{2}$
+\STATE $x_\theta = \nabla f^*(\theta \mu_q^\prime + (1 - \theta) \mu_r^\prime ) $
+\STATE $\mathcal{L}(\theta) = $
+\end{algorithmic}
+\label{alg_can_prune_dual}
+\end{algorithm}
+
+
+Idea: want to show that $c^* > d(q, r)$ for any $q$ and $r$ in their balls.
+
+Take Lagrange dual, take derivatives w.r.t. $q$ and $r$, set equal to zero and solve.  Show by this that the optima lie on the line between the centroids.
+
+Problem: get a weird second derivative popping up with $q$, not sure if I'm doing this right. Or, alternatively, if I apply the duality relationship, then I get just $q$ and $r$, which seems weird too.
+
+There's no real reason for me to expect $q$ to behave like $r$ here. 
+
+Just go through the calculus carefully again, I think I can make this work. Be careful not to insert any unnecessary $f$. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{theorem}
+Let $r \in B(\mu_r, R_r)$ and $q \in B^\dagger(\mu_q, R_q)$.  Let $q^*$ and $r^*$ be the points in these balls that minimize $d(q, r)$ over all such pairs. Then, both $q^{* \prime}$ and $r^{* \prime}$ lie on the line between $\mu_q^\prime$ and $\mu_r^\prime$. 
+\end{theorem}
+\begin{proof}
+If we are given $q^*$, then from Claim 2 in \cite{cayton} we have that $r^{* \prime}$ lies on the line between $q^{* \prime}$ and $\mu_r$. We can repeat this argument in the reverse direction to obtain two equations.  Substituting one into the other and applying a change of variables finishes the proof.
+
+The proof will require a left sided version of Claim 2, which may not work out with derivatives correctly. 
+\end{proof}
 
 
 

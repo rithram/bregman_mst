@@ -10,11 +10,6 @@
 
 namespace bmst {
 
-/**
- * For now we assume that the distribution is discrete, and represented by a vector of doubles.
- * This means that the user who instantiates this as TBregmanDiv needs to instantiate 
- * TDataType as std::vector<double>
- */
 template<typename T>
 class KLDivergence
 {

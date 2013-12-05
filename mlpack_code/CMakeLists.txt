@@ -18,3 +18,4 @@ add_executable(test_bbtree_main test_bbtree_main.cpp)
 
 add_executable(test_leftnn_search test_leftnn_search.cpp)
 
+add_executable(test_mst test_mst.cpp)

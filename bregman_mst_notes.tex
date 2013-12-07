@@ -138,6 +138,95 @@ Assume $\min_{q, r} d(q,r) < d(\mu_q, \mu_r) - R_q - R_r$.  Clearly, the balls d
 
 \subsection{Dual-Tree Pruning Rule}
 
+\begin{definition}
+The left and right Bregman balls with respect to a strictly convex function $f$ and Bregman divergence $d_f$ of radius $R$ and center $\mu$ are given by 
+\begin{eqnarray}
+B_f(\mu, R) & = & \{ x : d_f(x,\mu) \leq R \} \\
+B_f^\dagger(\mu, R) & = & \{ x : d_f(\mu, x) \leq R \}
+\end{eqnarray}
+\end{definition}
+
+
+
+\begin{lemma}
+(Cayton) The minimizer $x_p$ of 
+\begin{equation}
+\min_{x \in B(\mu, R)} d_f(x, p)
+\end{equation}
+has the following properties:
+\begin{enumerate}
+\item $\nabla f(x_p) = \theta \nabla f (\mu) + (1 - \theta) \nabla f( p)$ for some $\theta \in [0, 1]$
+\item $d_f(x_p, p) = R$
+\item $d_f(x_p, \mu)$ is monotonic in $\theta$.
+\end{enumerate}
+\label{primal_ball_lemma}
+\end{lemma}
+
+
+We would like to prove an analogous claim in the other direction.
+\begin{lemma}
+The minimizer $y_t$ of 
+\begin{equation}
+\min_{y \in B_f^\dagger(\mu, R)} d_f(t, y)
+\end{equation}
+has the following properties:
+\begin{enumerate}
+\item $y_t = \eta \mu + (1 - \eta) t$ for some $\eta \in [0, 1]$ \label{dual_ball_lemma_claim_1}
+\item $d_{f^*} (\nabla f(y_t), \nabla f(\mu)) = R$
+\item $d_{f^*} (\nabla f(y_t), \nabla f(\mu))$ is monotonic in $\eta$. 
+\end{enumerate}
+\label{dual_ball_lemma}
+\end{lemma}
+\begin{proof}
+We start with claim \ref{dual_ball_lemma_claim_1}. Using the identity between $d_f$ and $d_{f^*}$, we have that 
+\begin{equation}
+\min_{y \in B_f^\dagger(\mu, R)} d_f(t, y) = \min_{y \in B_f^\dagger(\mu, R)} d_{f^*}(\nabla f(y), \nabla f(t))
+\end{equation}
+Furthermore, we have that finding a minimizing $y$ in $B_f^\dagger(\mu, R)$ is equivalent to finding a minimizing $\nabla f(y)$ in $B_{f^*}(\nabla f(\mu), R)$ since the function $\nabla f$ is one-to-one.
+
+Through this transformation, we can apply lemma \ref{primal_ball_lemma} to the divergence $d_{f^*}$ to obtain the other two parts of the lemma.
+\end{proof}
+
+
+We compute the (unknown) solution $(q^*, r^*)$ to
+\begin{equation}
+\min_{q \in B_f(\mu_q, R_q)} \min_{r \in B_f^\dagger(\mu_r, R_r)} d_f(q, r)
+\label{eqn_dual_tree_opt}
+\end{equation}
+Using lemmas \ref{primal_ball_lemma} and \ref{dual_ball_lemma}, we can compute the points:
+\begin{eqnarray}
+\hat{q} & = & \arg \min_{q \in B_f(\mu_q, R_q)} d_f(q, \mu_r) \\
+\hat{r} & = & \arg \min_{r \in B_f^\dagger(\mu_r, R_r)} d_f(\mu_q, r)
+\end{eqnarray}
+
+Applying the previous lemmas, we have that $r^*$ must be the projection of $q^*$ onto the ball around $\mu_r$ and vice versa. Therefore,
+\begin{eqnarray}
+\nabla f(q^*) & = & \theta \nabla f (\mu_r) + (1 - \theta) \nabla f(r^*) \\
+r^* & = & \eta \mu_q + (1 - \eta) q^*	 	\\
+\nabla f(\hat{q}) & = & \alpha \nabla f(\mu_r) + (1 - \alpha ) f(\mu_q) \\
+\hat{r} & = & \beta \mu_q + (1 - \beta) \mu_r
+\end{eqnarray}
+
+If the operator $\nabla f$ were linear, we could simply apply it to the equation for $r^*$, then substitute to obtain an expression for $q^*$ in terms of $\mu_r$ and $\mu_q$. Unfortunately, this isn't necessarily the case (it is for L2, which is why our intuition holds up in that case). 
+
+We know that $d_f(q^*, \mu_q) = R_q$ and that $d_{f^*} (\nabla f(r^*), \nabla f(\mu_r)) = R_r$. We also know that $d_f(\hat{q}, \mu_q) = R$ and that $d_{f^*}(\nabla f(\hat{r}, \nabla f(\mu_r))) = R_r$. Can we argue that there is only one such point on the boundary of the ball? 
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 First, we define left and right Bregman balls.
 
 \begin{definition}

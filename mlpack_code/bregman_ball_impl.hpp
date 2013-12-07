@@ -22,11 +22,11 @@ BregmanBall<T, TBregmanDiv>::BregmanBall() :
 
 template <typename T, class TBregmanDiv>
 BregmanBall<T, TBregmanDiv>::BregmanBall(
-    const Point<T>& center, const double radius) :
-  centroid_(center),
-  radius_(radius)
+    const Point<T>& right_center, const double radius) :
+  right_centroid_(right_center),
+  right_radius_(radius)
 {
-  centroid_prime_  = TBregmanDiv::Gradient(centroid_);
+  right_centroid_prime_  = TBregmanDiv::Gradient(centroid_);
 }
 
 template <typename T, class TBregmanDiv>
@@ -45,7 +45,9 @@ bool BregmanBall<T, TBregmanDiv>::CanPruneRight(
 }
 
 template<typename T, class TBregmanDiv>
-bool BregmanBall<T, TBregmanDiv>::CanPruneRight(const Point<T>& q, const double q_div_to_best_candidate, const double q_div_to_centroid) const
+bool BregmanBall<T, TBregmanDiv>::CanPruneRight(const Point<T>& q, 
+                                                const double q_div_to_best_candidate, 
+                                                const double q_div_to_centroid) const
 {
   
   // if the query is in the ball, then theta > 1, so don't recurse
@@ -113,6 +115,37 @@ bool BregmanBall<T, TBregmanDiv>::CanPruneRight(
     return CanPruneRight(theta_l, theta, q, q_prime, q_div_to_best_candidate);
   }
 }
+
+template<typename T, class TBregmanDiv>
+bool BregmanBall<T, TBregmanDiv>::CanPruneRight(const BregmanBall<T, TBregmanDiv>& other, 
+                                                const double q_div_to_best_candidate, 
+                                                const double q_div_centroids) const
+{
+  
+  // if the balls intersect, can't prune
+  if (q_div_centroids - radius_ - other.radius() < 0)
+  {
+    
+  }
+  
+  return CanPruneRight(0, 1.0, other, q_div_to_best_candidate, q_div_centroids);
+  
+}
+
+template<typename T, class TBregmanDiv>
+bool BregmanBall<T, TBregmanDiv>::CanPruneRight(const double theta_l,
+                                                const double theta_r,
+                                                const BregmanBall<T, TBregmanDiv>& other, 
+                                                const double q_div_to_best_candidate, 
+                                                const double q_div_centroids) const
+{
+  
+  
+  
+  return false;
+  
+}
+
 
 template<typename T, class TBregmanDiv>
 const Point<T>& BregmanBall<T, TBregmanDiv>::centroid() const

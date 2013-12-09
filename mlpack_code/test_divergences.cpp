@@ -56,12 +56,15 @@ int main(int argc, char* argv[])
   
   div_a_b = KLDivergence<double>::Divergence(a,b);
   
-  assert(div_a_b == -DBL_MAX);
+  assert(div_a_b == std::numeric_limits<double>::max());
+  // assert(div_a_b == -DBL_MAX);
   
-  a[2] = -1.0;
-  div_a_b = KLDivergence<double>::Divergence(a,b);
+  /// NOTE: Removing this test because KL-divergence should not be computed on 
+  // negative valued features
+  // a[2] = -1.0;
+  // div_a_b = KLDivergence<double>::Divergence(a,b);
   
-  assert(div_a_b == DBL_MAX);
+  // assert(div_a_b == DBL_MAX);
   
   
   a[2] = 0.0;

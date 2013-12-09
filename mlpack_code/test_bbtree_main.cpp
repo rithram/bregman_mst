@@ -1,3 +1,4 @@
+
 /**
  * @file bmst/mlpack_code/test_bbtree_main.cpp
  * @author Pari Ram (p.ram@gatech.edu)
@@ -117,6 +118,9 @@ int main(int argc, char* argv[])
   std::cout << "Testing the bbtree with KLDiv ... DONE" << std::endl;
   std::cout << "================================================" << std::endl;
 
+  std::cout << "[TESTS-TO-BE-ADDED] We need to add tests for 'CentroidPrimes' and "
+    "for the left center and left radius" << std::endl;
+
   return 0;
 }
 
@@ -132,8 +136,8 @@ void TestTreeNode(const bmst::Table<T>& table, const TNode* node)
 
   center /= (T) node->Count();
 
-  assert(center.n_dims() == node->Center().n_dims());
-  const bmst::Point<T> center_diff = center - node->Center();
+  assert(center.n_dims() == node->RCenter().n_dims());
+  const bmst::Point<T> center_diff = center - node->RCenter();
   double center_diff_sq_norm = bmst::Dot(center_diff, center_diff);
   if (center_diff_sq_norm > 1e-10)
   {
@@ -151,10 +155,10 @@ void TestTreeNode(const bmst::Table<T>& table, const TNode* node)
       radius = div_to_center;
   }
 
-  if (fabs(radius - node->Radius()) > 1e-10)
+  if (fabs(radius - node->RRadius()) > 1e-10)
   {
     std::cout << "[TEST-FAIL] |true radius - supposed radius| = " << 
-      fabs(radius - node->Radius()) << std::endl;
+      fabs(radius - node->RRadius()) << std::endl;
     exit(1);
   }
 

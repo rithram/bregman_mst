@@ -14,23 +14,32 @@ double KLDivergence<T>::Divergence(const Point<T>& x, const Point<T>& y)
 
   for (int i = 0; i < x.n_dims(); i++)
   {
-
-    bool x_zero = (fabs(x[i]) < std::numeric_limits<double>::epsilon());
-    bool y_zero = (fabs(y[i]) < std::numeric_limits<double>::epsilon());
-    
-    if (!(!y_zero || x_zero)) // y == 0 should imply x == 0, if it doesn't handle specially
+    if (x[i] < 0 or y[i] < 0) 
     {
-      result = x[i] > 0 ? -DBL_MAX : DBL_MAX;
+      std::cout << "[ERROR] KL divergence cannot be computed for negative "
+        "valued features." << std::endl;
+      exit(1);
     }
-    else if (x_zero) // then they're both zero 
+
+    bool x_zero = (fabs(x[i]) < std::numeric_limits<T>::epsilon());
+    bool y_zero = (fabs(y[i]) < std::numeric_limits<T>::epsilon());
+    
+    if (not x_zero and y_zero) // y == 0 and x > 0,  handle specially
+    {
+      // x log x - x log y + y - x
+      // log 0 = - infty so result = infty
+      result = std::numeric_limits<T>::max();
+      break; // not need to loop over other features anymore, nothing will reduce infty
+    } 
+    else if (x_zero and not y_zero) // y > 0, x == 0 , x log (x/y) + y - x = y
     {
       // 0 log 0 is 0 for KL divergence
       result += y[i];
-    }
-    else {
+    } 
+    else if (not x_zero and not y_zero) 
+    {
       result += x[i] * log(x[i]/y[i]) + y[i] - x[i];      
     }
-    
   } // loop over features
     
   return result;
@@ -46,7 +55,17 @@ Point<T> KLDivergence<T>::Gradient(const Point<T>& x)
 
   for (int  i = 0; i < x.n_dims(); i++)
   {
-    result[i] = log(x[i]) + 1.0;
+    if (x[i] < 0) 
+    {
+      std::cout << "[ERROR] Gradient corresponding to KL divergence cannot "
+        "be computed for negative valued features." << std::endl;
+      exit(1);
+    }
+
+    if (x[i] == 0)
+      result[i] = -std::numeric_limits<T>::max();
+    else
+      result[i] = log(x[i]) + 1.0;
   }
 
   return result;

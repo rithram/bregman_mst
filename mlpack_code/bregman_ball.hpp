@@ -42,31 +42,52 @@ private:
       const Point<T>& q_prime,
       const double q_div_to_best_candidate) const;
     
+  bool CanPruneRight(
+      const double theta_l,
+      const double theta_r,
+      const BregmanBall<T, TBregmanDiv>& other, 
+      const double q_div_to_best_candidate, 
+      const double q_div_centroids) const;
+
 public:
   BregmanBall();
-  BregmanBall(const Point<T>& center, const double radius);
+  BregmanBall(const Point<T>& right_center, const double right_radius);
+  BregmanBall(
+      const Point<T>& right_center, 
+      const double right_radius, 
+      const Point<T>& left_center, 
+      const double left_radius);
   
   ~BregmanBall();
   
   // Pruning rule for a single query
   bool CanPruneRight(const Point<T>& q, const double q_div_to_best_candidate) const;
   
-  // We'll precompute this divergence to prioritize the tree search, so this function allows us not to compute
+  // We'll precompute this divergence to prioritize the tree search, 
+  // so this function allows us not to compute
   // the distance to the centroid again
-  bool CanPruneRight(const Point<T>& q, const double q_div_to_best_candidate, const double q_div_to_centroid) const;
+  bool CanPruneRight(
+      const Point<T>& q, 
+      const double q_div_to_best_candidate, 
+      const double q_div_to_centroid) const;
 
   // pruning rule for two nodes, with the query on the left
-  bool CanPruneRight(const BregmanBall<T, TBregmanDiv>& other, const double q_div_to_best_candidate, const double q_div_centroids) const;
+  bool CanPruneRight(
+      const BregmanBall<T, TBregmanDiv>& other, 
+      const double q_div_to_best_candidate, 
+      const double q_div_centroids) const;
 
-  const Point<T>& left_centroid() const;
+  const Point<T>& left_centroid() const { return left_centroid_; }
   
-  const Point<T>& left_centroid_prime() const;
+  const Point<T>& left_centroid_prime() const { return left_centroid_prime_; }
 
-  const Point<T>& right_centroid() const;
+  const Point<T>& right_centroid() const { return right_centroid_; }
   
-  const Point<T>& right_centroid_prime() const;
+  const Point<T>& right_centroid_prime() const { return right_centroid_prime_; }
   
-  const double radius() const;
+  const double right_radius() const { return right_radius_; }
+
+  const double left_radius() const { return left_radius_; }
 }; // class
 
 } // namespace

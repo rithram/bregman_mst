@@ -92,8 +92,10 @@ public:
   const int Count() const { return count_; }
     
   // node statistic accessors
-  const Point<T>& Center() const { return bounding_ball_.centroid(); }
-  const double Radius() const { return bounding_ball_.radius(); }
+  const Point<T>& RCenter() const { return bounding_ball_.right_centroid(); }
+  const double RRadius() const { return bounding_ball_.right_radius(); }
+  const Point<T>& LCenter() const { return bounding_ball_.left_centroid(); }
+  const double LRadius() const { return bounding_ball_.left_radius(); }
   const BregmanBall<T, TBregmanDiv>& Bound() const { return bounding_ball_; }
 
   // Pruning functions

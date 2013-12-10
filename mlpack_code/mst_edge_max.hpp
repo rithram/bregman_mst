@@ -1,6 +1,8 @@
 #ifndef MST_EDGE_MAX_HPP_
 #define MST_EDGE_MAX_HPP_
 
+#include "bregman_ball.hpp"
+
 namespace bmst {
 
   // A policy class which computes the length of an edge (x,y) as 
@@ -20,11 +22,9 @@ namespace bmst {
   
   }; // class
 
-
-
 } // namespace
 
 
-
+#include "mst_edge_max_impl.hpp"
 
 #endif

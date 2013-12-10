@@ -19,6 +19,11 @@ namespace bmst {
       :
     u(u_in), v(v_in), weight(weight_in)
     {}
+      
+    Edge()
+      :
+    u(-1), v(-1), weight(-DBL_MAX)
+    {}
   
   }; // class Edge
 
@@ -68,7 +73,7 @@ namespace bmst {
     // Single-tree Boruvka, loop over all queries
     void ComputeSTB();
     
-    std::vector<Edge>& EdgeList() const;
+    std::vector<Edge>& EdgeList();
     
   
   
@@ -78,7 +83,7 @@ namespace bmst {
 }
 
 
-#include "minimum_spanning_tree_impl.hpp";
+#include "minimum_spanning_tree_impl.hpp"
 
 
 

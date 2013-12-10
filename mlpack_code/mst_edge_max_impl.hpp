@@ -4,7 +4,7 @@
 namespace bmst {
 
   template<typename T, class TBregmanDiv>
-  static double MstEdgeMax<T, TBregmanDiv>::EdgeWeight(const Point<T>& x, const Point<T>&y)
+  double MstMaxEdge<T, TBregmanDiv>::EdgeWeight(const Point<T>& x, const Point<T>& y)
   {
   
     double xy = TBregmanDiv::Divergence(x,y);
@@ -15,7 +15,7 @@ namespace bmst {
   }
 
   template<typename T, class TBregmanDiv>
-  static bool MstEdgeMax<T, TBregmanDiv>::CanPrune(const BoundType& query_bound,
+  bool MstMaxEdge<T, TBregmanDiv>::CanPrune(const BoundType& query_bound,
                                                    const BoundType& ref_bound)
   { 
 
@@ -24,7 +24,7 @@ namespace bmst {
   }
 
   template<typename T, class TBregmanDiv>
-  static bool MstEdgeMax<T, TBregmanDiv>::CanPrune(const Point<T>& query,
+  bool MstMaxEdge<T, TBregmanDiv>::CanPrune(const Point<T>& query,
                                                     const BoundType& ref_bound, 
                                                     double candidate_dist)
   {

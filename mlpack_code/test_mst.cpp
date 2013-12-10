@@ -3,6 +3,8 @@
 #include "mst_edge_max.hpp"
 #include "KLDivergence.hpp"
 #include "L2Divergence.hpp"
+#include "bregman_ball_tree.hpp"
+#include "kmeans_splitter.hpp"
 
 using namespace bmst;
 
@@ -16,13 +18,14 @@ int main(int argc, char* argv[])
   std::vector<std::vector<double> > data_points;
 
   int num_data = 1000;
+  int num_features = 5;
 
   for (size_t i = 0; i < num_data; i++) {
     std::vector<double> point;
     for (size_t j = 0; j < num_features; j++) {
       point.push_back(randu(generator));
     }
-    data_points.push_back(ref_point);
+    data_points.push_back(point);
   }
 
   Table<double> data(data_points);
@@ -30,9 +33,10 @@ int main(int argc, char* argv[])
   
   //////////////////////////////////
   
-  typedef BregmanBallTree<double, KLDivergence, KMeansSplitter<double, KLDivergence> > TreeType;
+  typedef KLDivergence<double> DivType;
+  typedef BregmanBallTree<double, DivType, KMeansSplitter<double, DivType> > TreeType;
   
-  MinimumSpanningTree<double, MstMaxEdge<KLDivergence<double> >, TreeType> mst(data);
+  MinimumSpanningTree<double, MstMaxEdge<double, DivType>, TreeType> mst(data);
 
   mst.ComputeNaive(true);
 

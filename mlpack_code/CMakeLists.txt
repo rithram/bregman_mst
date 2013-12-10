@@ -42,5 +42,6 @@ target_link_libraries(test_search_main
   ${Boost_LIBRARIES})
 
 add_executable(test_mst 
-  test_mst.cpp)
-
+  test_mst.cpp  union_find.cpp)
+target_link_libraries(test_mst
+  ${Boost_LIBRARIES})

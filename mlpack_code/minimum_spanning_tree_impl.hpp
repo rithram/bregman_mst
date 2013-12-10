@@ -9,7 +9,7 @@ namespace bmst {
   :
   data_(data),
   components_(data.n_points()),
-  nearest_neighbors_(data.n_points(), -1),
+  nearest_neighbors_(data.n_points()),
   candidate_dists_(data.n_points(), DBL_MAX)
   {
     
@@ -39,6 +39,7 @@ namespace bmst {
     
   }
   
+  template<typename T, class EdgePolicy, class TTreeType>
   void MinimumSpanningTree<T, EdgePolicy, TTreeType>::SearchTree_(TTreeType* query_node,
                                                                   TTreeType* reference_node)
   {
@@ -147,13 +148,13 @@ namespace bmst {
 
       edge_weights.resize(data_.n_points());  
       
-      for (size_t i = 0; i < data.n_points() - 1; i++)
+      for (size_t i = 0; i < data_.n_points() - 1; i++)
       {
         
-        edge_weights[i].resize(data.n_points);
+        edge_weights[i].resize(data_.n_points());
         edge_weights[i][i] = 0.0;
         
-        for (size_t j = i+1; j < data.n_points(); j++)
+        for (size_t j = i+1; j < data_.n_points(); j++)
         {
       
           double this_weight = EdgePolicy::EdgeWeight(data_[i], data_[j]);
@@ -177,7 +178,7 @@ namespace bmst {
     bool compute_weights = (edge_weights.size() == 0);
     
     // until we have N - 1 edges
-    while (edge_list.size() < data_.n_points() - 1)
+    while (edge_list_.size() < data_.n_points() - 1)
     {
       
       for (size_t i = 0; i < data_.n_points(); i++)
@@ -341,7 +342,7 @@ namespace bmst {
   } // SearchTree_()
   
   template<typename T, class EdgePolicy, class TTreeType>
-  std::vector<Edge>& MinimumSpanningTree<T, EdgePolicy, TTreeType>::EdgeList() const
+  std::vector<Edge>& MinimumSpanningTree<T, EdgePolicy, TTreeType>::EdgeList() 
   {
     return edge_list_;
   }

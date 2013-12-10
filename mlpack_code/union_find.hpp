@@ -2,7 +2,8 @@
 #ifndef UNION_FIND_HPP_
 #define UNION_FIND_HPP_
 
-#include <stdlib>
+#include <vector>
+#include "data.hpp"
 
 namespace bmst {
 

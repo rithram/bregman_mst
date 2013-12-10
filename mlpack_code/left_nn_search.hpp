@@ -22,7 +22,7 @@ namespace bmst {
     
   private:
     
-    typedef KMeansSplitter<double, TBregmanDiv> TSplitter;
+    typedef KMeansSplitter<T, TBregmanDiv> TSplitter;
     
     typedef BregmanBallTree<T, TBregmanDiv, TSplitter> TTreeType;
   

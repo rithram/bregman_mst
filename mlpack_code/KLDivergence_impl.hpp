@@ -21,8 +21,9 @@ double KLDivergence<T>::Divergence(const Point<T>& x, const Point<T>& y)
       exit(1);
     }
 
-    bool x_zero = (fabs(x[i]) < std::numeric_limits<T>::epsilon());
-    bool y_zero = (fabs(y[i]) < std::numeric_limits<T>::epsilon());
+    // can take out fabs() here because we already checked if they're negative
+    bool x_zero = (x[i] < std::numeric_limits<T>::epsilon());
+    bool y_zero = (y[i] < std::numeric_limits<T>::epsilon());
     
     if (not x_zero and y_zero) // y == 0 and x > 0,  handle specially
     {
@@ -62,7 +63,8 @@ Point<T> KLDivergence<T>::Gradient(const Point<T>& x)
       exit(1);
     }
 
-    if (x[i] == 0)
+    // Changed to check for numerical zero, not exact zero
+    if (x[i] < std::numeric_limits<T>::epsilon())
       result[i] = -std::numeric_limits<T>::max();
     else
       result[i] = log(x[i]) + 1.0;
@@ -88,6 +90,6 @@ Point<T> KLDivergence<T>::GradientConjugate(const Point<T>& x)
 
 }
 
-}
+} // namespace
 
 #endif

@@ -71,7 +71,10 @@ bool BregmanBall<T, TBregmanDiv>::CanPruneRight(
   // also, if the query is closer to the centroid than to its candidate, 
   // we can't prune
   // even with theta = 0, so don't bother
-  if (q_div_to_centroid <= right_radius_ || q_div_to_centroid < q_div_to_best_candidate)
+  // Also, if the node is a singleton, just do the base case
+  if (right_radius_ < std::numeric_limits<T>::epsilon()
+      || q_div_to_centroid <= right_radius_ 
+      || q_div_to_centroid < q_div_to_best_candidate)
   {
     return false;
   }  
@@ -110,7 +113,7 @@ bool BregmanBall<T, TBregmanDiv>::CanPruneRight(
       = d_x_theta_q + theta / (1.0 - theta) * (d_x_theta_mu - right_radius_);
   
   //std::cout << "d_x_theta_mu: " << d_x_theta_mu << ", d_x_theta_q: " << d_x_theta_q << ", L_theta: " << L_theta << "\n";
-  //std::cout<< "radius: " << radius_ << ", q_div_to_best_candidate: " << q_div_to_best_candidate << "\n\n";
+  //std::cout<< "radius: " << right_radius_ << ", q_div_to_best_candidate: " << q_div_to_best_candidate << "\n\n";
       
   if (L_theta > q_div_to_best_candidate)
   {

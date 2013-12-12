@@ -160,44 +160,43 @@ void Point<T>::print() const
   
 }
 
-
 // Binary +
-template<typename TPoint>
-TPoint operator+(const TPoint& lhs, const TPoint& rhs)
+template<typename T>
+Point<T> operator+(const Point<T>& lhs, const Point<T>& rhs)
 {
-  return TPoint(lhs) += rhs;
+  return Point<T>(lhs) += rhs;
 }
 
 // Binary -
-template<typename TPoint>
-TPoint operator-(const TPoint& lhs, const TPoint& rhs)
+template<typename T>
+Point<T> operator-(const Point<T>& lhs, const Point<T>& rhs)
 {
-  return TPoint(lhs) -= rhs;
+  return Point<T>(lhs) -= rhs;
 }
 
 // Binary *
-template<typename TPoint>
-TPoint operator*(const double lhs, const TPoint& rhs)
+template<typename T>
+Point<T> operator*(const double lhs, const Point<T>& rhs)
 {
-  return TPoint(rhs) *= lhs;
+  return Point<T>(rhs) *= lhs;
 }
 
-template<typename TPoint>
-TPoint operator*(const TPoint& lhs, const double rhs)
+template<typename T>
+Point<T> operator*(const Point<T>& lhs, const double rhs)
 {
-  return TPoint(lhs) *= rhs;
+  return Point<T>(lhs) *= rhs;
 }
 
 // Binary /
-template<typename TPoint>
-TPoint operator/(const TPoint& lhs, const double rhs)
+template<typename T>
+Point<T> operator/(const Point<T>& lhs, const double rhs)
 {
-  return TPoint(lhs) /= rhs;
+  return Point<T>(lhs) /= rhs;
 }
 
 // Binary dot product
-template<typename TPoint>
-double Dot(const TPoint& a, const TPoint& b)
+template<typename T>
+double Dot(const Point<T>& a, const Point<T>& b)
 {
   if (a.n_dims() != b.n_dims())
   {

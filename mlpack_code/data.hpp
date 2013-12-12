@@ -46,28 +46,29 @@ public:
   
 };
 
+
 // Binary +
-template<typename TPoint>
-TPoint operator+(const TPoint& lhs, const TPoint& rhs);
+template<typename T>
+Point<T> operator+(const Point<T>& lhs, const Point<T>& rhs);
 
 // Binary -
-template<typename TPoint>
-TPoint operator-(const TPoint& lhs, const TPoint& rhs);
+template<typename T>
+Point<T> operator-(const Point<T>& lhs, const Point<T>& rhs);
 
 // Binary *
-template<typename TPoint>
-TPoint operator*(const double lhs, const TPoint& rhs);
+template<typename T>
+Point<T> operator*(const double lhs, const Point<T>& rhs);
 
-template<typename TPoint>
-TPoint operator*(const TPoint& lhs, const double rhs);
+template<typename T>
+Point<T> operator*(const Point<T>& lhs, const double rhs);
 
 // Binary /
-template<typename TPoint>
-TPoint operator/(const TPoint& lhs, const double rhs);
+template<typename T>
+Point<T> operator/(const Point<T>& lhs, const double rhs);
 
 // Binary dot product
-template<typename TPoint>
-double Dot(const TPoint& a, const TPoint& b);
+template<typename T>
+double Dot(const Point<T>& a, const Point<T>& b);
 
 template <typename T>
 class Table

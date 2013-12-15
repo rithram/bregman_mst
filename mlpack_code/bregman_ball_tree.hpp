@@ -97,6 +97,7 @@ public:
   const Point<T>& LCenter() const { return bounding_ball_.left_centroid(); }
   const double LRadius() const { return bounding_ball_.left_radius(); }
   const BregmanBall<T, TBregmanDiv>& Bound() const { return bounding_ball_; }
+  BregmanBall<T, TBregmanDiv>& Bound() { return bounding_ball_; }
 
   // Pruning functions
   // point-ball right-prune

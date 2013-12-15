@@ -26,6 +26,14 @@ namespace bmst {
     {}
   
   }; // class Edge
+  
+  struct EdgeSorterStruct
+  {
+    bool operator()(const Edge& A, const Edge& B)
+    {
+      return (A.weight < B.weight);
+    }
+  } EdgeSorter;
 
 
   template<typename T, class EdgePolicy, class TTreeType>
@@ -54,11 +62,17 @@ namespace bmst {
 
     void AddEdges_();
     
-    void SearchTree_(const Point<T>& q, size_t root_q, TTreeType* node);
+    void SearchTree_(const Point<T>& q, size_t q_index, size_t root_q, TTreeType* node);
+    
+    void ResetTree_(TTreeType* node);
+
+    void UpdateTree_(TTreeType* node);
+    
+    void ResetAll_();
     
   public:
     
-    MinimumSpanningTree(Table<T>& data);
+    MinimumSpanningTree(Table<T>& data, int leaf_size = 1);
   
     ~MinimumSpanningTree();
   
@@ -72,10 +86,9 @@ namespace bmst {
     
     // Single-tree Boruvka, loop over all queries
     void ComputeSTB();
-    
-    std::vector<Edge>& EdgeList();
-    
   
+    // This will put things back in terms of the original indexing  
+    std::vector<Edge>& EdgeList();
   
   }; // class MST
 

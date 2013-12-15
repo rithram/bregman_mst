@@ -19,6 +19,8 @@ public:
   
   void Union(const size_t& i, const size_t& j);
   
+  void Reset();
+  
   
 private:
 

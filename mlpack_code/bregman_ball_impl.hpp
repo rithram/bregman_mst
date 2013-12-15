@@ -20,7 +20,8 @@ BregmanBall<T, TBregmanDiv>::BregmanBall() :
   left_centroid_(Point<T>()),
   left_centroid_prime_(Point<T>()),
   right_radius_(0),
-  left_radius_(0)
+  left_radius_(0),
+  component_(-1)
 {}
 
 template <typename T, class TBregmanDiv>

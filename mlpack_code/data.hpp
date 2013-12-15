@@ -90,7 +90,9 @@ public:
   Point<T>& operator[](const size_t i);
   const Point<T>& operator[](const size_t i) const;
   Table& operator=(const Table& table);
-
+  
+  void print() const;
+  
 }; // class
 
 }; // namespace

@@ -55,4 +55,16 @@ void UnionFind::Union(const size_t& i, const size_t& j)
   
 }
 
+void UnionFind::Reset()
+{
+  
+  for (size_t i = 0; i < parents_.size(); i++)
+  {
+    parents_[i] = i;
+    ranks_[i] = 0;
+  }
+  
+}
+
+
 

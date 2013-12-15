@@ -315,5 +315,17 @@ Table<T>& Table<T>::operator=(const Table<T>& table)
   points_ = table.points_;
 }
 
+template<typename T>
+void Table<T>::print() const
+{
+  
+  for (int i = 0; i < n_points_; i++)
+  {
+    points_[i].print();
+  }
+  
+}
+
+
 }; // namespace
 #endif

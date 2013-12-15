@@ -153,7 +153,12 @@ int main(int argc, char* argv[])
 template <typename T, class Divergence>
 void DoSearchAndCompareToNaive(bmst::Table<T>& rset, bmst::Table<T>& qset)
 {
+  
+  //qset.make_non_zero(0.01);
+  //rset.make_non_zero(0.02);
+  
   bmst::LeftNNSearch<T, Divergence> searcher(rset, 1);
+
   std::vector<size_t> neighbors(qset.n_points());
   std::vector<size_t> naive_neighbors(qset.n_points());
 
@@ -163,6 +168,12 @@ void DoSearchAndCompareToNaive(bmst::Table<T>& rset, bmst::Table<T>& qset)
   {
     neighbors[i] = searcher.ComputeNeighbor(qset[i]);
     naive_neighbors[i] = searcher.ComputeNeighborNaive(qset[i]);
+    
+    if (neighbors[i] != naive_neighbors[i]) 
+    {
+      qset[i].print();
+    }
+    
     assert(neighbors[i] == naive_neighbors[i]);
   }
   cout << "DONE " << endl;

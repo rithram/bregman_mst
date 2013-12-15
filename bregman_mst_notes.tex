@@ -209,10 +209,28 @@ r^* & = & \eta \mu_q + (1 - \eta) q^*	 	\\
 
 If the operator $\nabla f$ were linear, we could simply apply it to the equation for $r^*$, then substitute to obtain an expression for $q^*$ in terms of $\mu_r$ and $\mu_q$. Unfortunately, this isn't necessarily the case (it is for L2, which is why our intuition holds up in that case). 
 
+The linearization of $\nabla f$ is a lower bound for the true gradient? 
+
 We know that $d_f(q^*, \mu_q) = R_q$ and that $d_{f^*} (\nabla f(r^*), \nabla f(\mu_r)) = R_r$. We also know that $d_f(\hat{q}, \mu_q) = R$ and that $d_{f^*}(\nabla f(\hat{r}, \nabla f(\mu_r))) = R_r$. Can we argue that there is only one such point on the boundary of the ball? 
 
 
+Proof ideas:
+\begin{itemize}
+\item Show that the full optimization problem (Eqn.~\ref{eqn_dual_tree_opt}) is convex in both its arguments.  Then, consider a small perturbation away from $\hat{q}$ and $\hat{r}$.  For a small enough perturbation, we can replace the divergence of the perturbation with its linear expansion. (Actually, I think with convexity I can just claim that the linear Taylor series is always a lower bound, which should be all I need). We then show that the divergence of the perturbation is always larger than the original perturbation, so $(\hat{q}, \hat{r})$ must be the global minimum. 
+\item Try to write down a counter example where $(q^*, r^*)$ are different from $(\hat{q}, \hat{r})$. 
+\item Show that $d_f(q^*, r^*) \leq d_f(\hat{q}, \hat{r})$, then argue uniqueness from convexity.  (Although, we don't need uniqueness, since, we're just looking to bound the distance anyway).
+\item Revisit the Pythagorean theorem about projections.  Write it down in primal and dual and see if something good happens.         
+\end{itemize}
 
+
+Possible counter-example: 
+KL Divergence: 
+
+Need something where the bounding sets come close together but not along the line joining the means.
+
+	One example: two ovals tilted toward each other.  These are convex sets, and the points minimizing the L2 distance between them are not on the line between the means. However, they are not balls. 
+		Is there a Bregman divergence under which these sets are balls? Can Mahalanobis distance do this? 
+		It will have to lack the triangle inequality
 
 
 

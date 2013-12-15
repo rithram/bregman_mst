@@ -33,6 +33,8 @@ private:
   
   double right_radius_;
   double left_radius_;
+  
+  size_t component_;
 
   // helper for pruning in single tree traversal
   bool CanPruneRight(
@@ -88,6 +90,11 @@ public:
   const double right_radius() const { return right_radius_; }
 
   const double left_radius() const { return left_radius_; }
+  
+  const size_t Component() const { return component_; }
+  
+  void SetComponent(size_t comp) { component_ = comp; }
+  
 }; // class
 
 } // namespace

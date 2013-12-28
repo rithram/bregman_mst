@@ -202,9 +202,21 @@ Using lemmas \ref{primal_ball_lemma} and \ref{dual_ball_lemma}, we can compute t
 Applying the previous lemmas, we have that $r^*$ must be the projection of $q^*$ onto the ball around $\mu_r$ and vice versa. Therefore,
 \begin{eqnarray}
 \nabla f(q^*) & = & \theta \nabla f (\mu_r) + (1 - \theta) \nabla f(r^*) \\
+d_f(q^*, \mu_q) & = & R_q \\
 r^* & = & \eta \mu_q + (1 - \eta) q^*	 	\\
+d_f(\mu_r, r^*) & = & R_r.
+\end{eqnarray}
+
+\noindent
+\textit{Notes from 12/27 ...}
+\paragraph*{Remark.} It is important to note that the above conditions are {\em necessary} for optimality. I have not yet been able to show that any pair $(\bar{q},\bar{r})$ that satisfies the above conditions, $d_f(\bar{q}, \bar{r}) = \min_{(q, r)} d_f(q, r)$ (so we lack {\em sufficiency} for this set of conditions). So what this implies is that even if we try to solve the problem in Equation \eqref{eqn_dual_tree_opt} with alternately solving the convex problems for $q$ and $r$. 
+
+The projection $\hat{r}$ of $\mu_q$ onto $B^\dagger_f(\mu_r, R_r)$ and the projection $\hat{q}$ of $\mu_r$ onto $B_f(\mu_q, R_q)$ is given by the following set of equations (where we solve for $\alpha$ and $\beta$:
+\begin{eqnarray}
 \nabla f(\hat{q}) & = & \alpha \nabla f(\mu_r) + (1 - \alpha ) f(\mu_q) \\
-\hat{r} & = & \beta \mu_q + (1 - \beta) \mu_r
+d_f(\hat{q}, \mu_q) & = & R_q \\
+\hat{r} & = & \beta \mu_q + (1 - \beta) \mu_r \\
+d_f(\mu_r, \hat{r}) & = & R_r
 \end{eqnarray}
 
 If the operator $\nabla f$ were linear, we could simply apply it to the equation for $r^*$, then substitute to obtain an expression for $q^*$ in terms of $\mu_r$ and $\mu_q$. Unfortunately, this isn't necessarily the case (it is for L2, which is why our intuition holds up in that case). 
@@ -223,6 +235,7 @@ Proof ideas:
 \end{itemize}
 
 
+\subsubsection*{Possible counter examples}
 Possible counter-example: 
 KL Divergence: 
 
@@ -231,15 +244,6 @@ Need something where the bounding sets come close together but not along the lin
 	One example: two ovals tilted toward each other.  These are convex sets, and the points minimizing the L2 distance between them are not on the line between the means. However, they are not balls. 
 		Is there a Bregman divergence under which these sets are balls? Can Mahalanobis distance do this? 
 		It will have to lack the triangle inequality
-
-
-
-
-
-
-
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -365,5 +369,67 @@ Generalized I-divergence & $\mathbb{R}_+^d$ & $\sum_i x_i \log x_i$ & $\sum_i x_
 \caption{Bregman divergences with generating functions}
 \label{tab:bdivs}
 \end{table}
+
+
+\noindent
+\textit{Notes from 12/27 ...}
+\section*{Random Notes}
+Notation:
+\begin{itemize}
+\item $B_f(\mu_q, R_q) = \{ x \colon d_f(x, \mu_q) \leq R_q \} = \{ x \colon d_{f^*}(\mu_q', x') \leq R_q \} = B^\dagger_{f^*}(\mu_q', R_q),$
+\item $B^\dagger_f(\mu_r, R_r) = \{ x \colon d_f(\mu_r, x) \leq R_r \} = \{ x \colon d_{f^*}(x', \mu_r') \leq R_r \} = B_{f^*}(\mu_r', R_r),$
+\item $(q^*, r^*) = \arg \min\limits_{q \in B_f(\mu_q, R_q), r \in B^\dagger_f(\mu_r, R_r)} d_f(q, r),$
+  \begin{itemize}
+  \item We can show that $q^* = \arg \min\limits_{q \in B_f(\mu_q, R_q)} d_f(q, r^*),$
+  \item We can show that $r^* = \arg \min\limits_{r \in B^\dagger_f(\mu_r, R_r)} d_f(q^*, r) = \nabla f^*  \left(\arg \min\limits_{r' \in B_{f^*}(\mu_r', R_r)}  d_{f^*} (r',{ q^* }') \right) ,$
+  \end{itemize}
+\item Let $(\widehat{q}, \widehat{r})$ be the respective projections of $\mu_q$ and $\mu_r$ on their corresponding other balls:
+  \begin{itemize}
+  \item $\widehat{q} = \arg \min\limits_{q \in B_f(\mu_q, R_q)} d_f(q, \mu_r),$
+    \begin{itemize}
+    \item $\widehat{q}' = \theta_1 \mu_q' + (1 - \theta_1) \mu_r',$
+    \item $d_f(\widehat{q}, \mu_q) = R_q,$
+    \end{itemize}
+  \item There exists another point at the intersection of the line joining $\mu_q'$ and $\mu_r'$ and the edge of $B^\dagger_f(\mu_r, R_r)$ we can call $\bar{r}$ such that:
+    \begin{itemize}
+    \item $\bar{r}' = \nu_1 \mu_q' + (1 - \nu_1) \mu_r',$
+    \item $d_f(\mu_r, \bar{r}) = R_r,$
+    \end{itemize}
+  \item $\widehat{r} = \arg \min\limits_{r \in B^\dagger_f(\mu_r, R_r)} d_f(\mu_q, r),$
+    \begin{itemize}
+    \item $\widehat{r} = \theta_2 \mu_r + (1 - \theta_2) \mu_q,$
+    \item $d_f(\mu_r, \widehat{r}) = R_r,$
+    \end{itemize}
+  \item There exists another point at the intersection of the line joining $\mu_q$ and $\mu_r$ and the edge of $B_f(\mu_q, R_q)$ we can call $\bar{q}$ such that:
+    \begin{itemize}
+    \item $\bar{q} = \nu_2 \mu_r + (1 - \nu_2) \mu_q,$
+    \item $d_f(\bar{q}, \mu_q) = R_q.$
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+\begin{figure}[htb]
+\includegraphics[width=\textwidth]{./images/notation}
+\label{fig:notation}
+\caption{{\bf Notation.} The solid line signifies a straight line in the primal space while the broken line denotes a straight line in the dual space.}
+\end{figure}
+
+\paragraph*{Random question.} Given a point $q$ and a convex set $B(\mu, R)$, let $x_q = \arg \min\limits_{x \in B(\mu, R)} d_f(x, q)$ be the projection of $q$ onto $B(\mu, R)$. We know that $x_q$ lies on the intersection of the line joining $\mu'$ and $q'$ and the edge of $B(\mu, R)$. If we have some other point $q_1$ such that $q_1'$ lies on the line joining $\mu'$ and $q'$, can we say that $\arg \min\limits_{x \in B(\mu, R)} d_f(x, q_1) == x_q$?
+\begin{proof}
+The answer is probably yes. This is because $x_{q_1} = \arg \min\limits_{x \in B(\mu, R)} d_f(x, q_1) $ lies at the intersection of the line joining $\mu'$ and $q_1'$ and the edge of $B(\mu, R)$ (that is, $d_f(x_{q_1}, \mu) = R$). This is the same line and the same Bregman ball for $x_q$. So $x_q == x_{q_1}$.
+\end{proof}
+
+\noindent
+What this implies is that
+\begin{itemize}
+\item $ \widehat{q} = \arg \min\limits_{q \in B_f(\mu_q, R_q)} d_f(q, \mu_r) = \arg \min\limits_{q \in B_f(\mu_q, R_q)} d_f(q, \bar{r}) $
+\item $\widehat{r} = \arg \min\limits_{r \in B^\dagger_f(\mu_r, R_r)} d_f(\mu_q, r) = \arg \min\limits_{r \in B^\dagger_f(\mu_r, R_r)} d_f(\bar{q}, r),$
+\end{itemize}
+
+
+Now we apply the Bregman Pythagorean theorem to all projections. 
+
+\paragraph*{ISSUE}
+The problem is that I was not able to get any useful (easy to compute) lower bound(s) on $d_f(q^*, r^*)$. The main issue is that $q^*$ and $r^*$ are projections of each other in the dual and primal space respectively, and hence there are no non-trivial inequalities using the Bregman Pythagorean theorem with the term $d_f(q^*, r^*)$ on the left hand side of the inequality\footnote{For clarity, let $C$ be a convex set and for any $x$, let $x_p = \arg \min_{z \in C} d_f(z, x)$ be the projection of $x$ onto $C$. Then the Pythagorean theorem tells us that $\forall y \in C, d_f(y, x) \geq d_f(y, x_p) + d_f(x_p, x)$.}.
 
 \end{document}  

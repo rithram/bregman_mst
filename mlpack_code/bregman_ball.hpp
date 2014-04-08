@@ -99,6 +99,7 @@ public:
 
 } // namespace
 
+#endif
+
 #include "bregman_ball_impl.hpp"
 
-#endif

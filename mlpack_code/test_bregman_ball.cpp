@@ -5,10 +5,8 @@
 
 using namespace bmst;
 
-
 int main (int argc, char* argv[])
 {
-  
   std::vector<double> q_vec(5, 0.1);
   q_vec[0] = 0.5;
   Point<double> q(q_vec);
@@ -53,5 +51,4 @@ int main (int argc, char* argv[])
   std::cout << "L2 Ball Passed.\n";
   
   return 0;
-  
 }

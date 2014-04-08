@@ -57,7 +57,7 @@ template<typename T, class TBregmanDiv>
 bool BregmanBall<T, TBregmanDiv>::CanPruneRight(
     const Point<T>& q, const double q_div_to_best_candidate) const
 {
-  double d_q_mu = TBregmanDiv::Divergence(q, right_centroid_);
+  double d_q_mu = TBregmanDiv::BDivergence(q, right_centroid_);
   //std::cout << "d_q_mu: " << d_q_mu << ", radius: " << radius_ << ", q_div_to_best_candidate: " << q_div_to_best_candidate << "\n";
   return CanPruneRight(q, q_div_to_best_candidate, d_q_mu);
 }
@@ -107,8 +107,8 @@ bool BregmanBall<T, TBregmanDiv>::CanPruneRight(
   //std::cout << "x_theta: ";
   //x_theta.print(); 
 
-  double d_x_theta_mu = TBregmanDiv::Divergence(x_theta, right_centroid_);
-  double d_x_theta_q = TBregmanDiv::Divergence(x_theta, q);
+  double d_x_theta_mu = TBregmanDiv::BDivergence(x_theta, right_centroid_);
+  double d_x_theta_q = TBregmanDiv::BDivergence(x_theta, q);
   
   double L_theta 
       = d_x_theta_q + theta / (1.0 - theta) * (d_x_theta_mu - right_radius_);
@@ -145,7 +145,7 @@ bool BregmanBall<T, TBregmanDiv>::CanPruneRight(
   // if the balls intersect, can't prune
   if (q_div_centroids - right_radius_ - other.radius() < 0)
   {
-    
+    return false;    
   }
   
   return CanPruneRight(0, 1.0, other, q_div_to_best_candidate, q_div_centroids);

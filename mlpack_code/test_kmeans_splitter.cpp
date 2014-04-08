@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
     // if 2 points have 0 divergence, they should have same membership
     for (size_t i = 0; i < test_table.n_points(); i++)
       for (size_t j = 0; j < test_table.n_points(); j++)
-        if (bmst::L2Divergence<double>::Divergence(test_table[i], test_table[j]) == 0)
+        if (bmst::L2Divergence<double>::BDivergence(test_table[i], test_table[j]) == 0)
           assert(membership[i] == membership[j]);
 
     // make sure that the centers are either p1, p2 or p3
@@ -177,7 +177,7 @@ int main(int argc, char* argv[])
     // if 2 points have 0 divergence, they should have same membership
     for (size_t i = 0; i < test_table.n_points(); i++)
       for (size_t j = 0; j < test_table.n_points(); j++)
-        if (bmst::KLDivergence<double>::Divergence(test_table[i], test_table[j]) == 0)
+        if (bmst::KLDivergence<double>::BDivergence(test_table[i], test_table[j]) == 0)
           assert(membership[i] == membership[j]);
 
     // make sure that the centers are either p1, p2 or p3
@@ -496,7 +496,7 @@ int main(int argc, char* argv[])
       std::vector<double> actual_radii(k_for_kmeans, 0);
       for (size_t i = 0; i < membership.size(); i++)
       {
-        double div_to_assigned_center = bmst::KLDivergence<double>::Divergence(
+        double div_to_assigned_center = bmst::KLDivergence<double>::BDivergence(
             rand_table[range_lb + i], actual_centers[membership[i]]);
         if (div_to_assigned_center > actual_radii[membership[i]])
           actual_radii[membership[i]] = div_to_assigned_center;
@@ -595,7 +595,7 @@ int main(int argc, char* argv[])
       std::vector<double> actual_radii(k_for_kmeans, 0);
       for (size_t i = 0; i < membership.size(); i++)
       {
-        double div_to_assigned_center = bmst::L2Divergence<double>::Divergence(
+        double div_to_assigned_center = bmst::L2Divergence<double>::BDivergence(
             rand_table[range_lb + i], actual_centers[membership[i]]);
         if (div_to_assigned_center > actual_radii[membership[i]])
           actual_radii[membership[i]] = div_to_assigned_center;

@@ -59,7 +59,7 @@ void KMeansSplitter<T, TBregmanDiv>::PartitionData(
     size_t max_index = end_index;
     for (size_t i = begin_index; i < end_index; i++) 
     {
-      double div_to_center = TBregmanDiv::Divergence(data[i], centers[j - 1]);
+      double div_to_center = TBregmanDiv::BDivergence(data[i], centers[j - 1]);
       if (div_to_center < div_to_closest_mean[i - begin_index])
       {
         div_to_closest_mean[i - begin_index] = div_to_center;
@@ -115,7 +115,7 @@ void KMeansSplitter<T, TBregmanDiv>::PartitionData(
       size_t min_index = k_;
       for (size_t j = 0; j < k_; j++)
       {
-        double div_to_center = TBregmanDiv::Divergence(data[i], centers[j]);
+        double div_to_center = TBregmanDiv::BDivergence(data[i], centers[j]);
         if (div_to_center < min_div) 
         {
           min_div = div_to_center;
@@ -192,7 +192,7 @@ void KMeansSplitter<T, TBregmanDiv>::PartitionData(
   for (size_t i = begin_index; i < end_index; i++)
   {
     size_t j = membership[i - begin_index];
-    double div_to_center = TBregmanDiv::Divergence(data[i], centers[j]);
+    double div_to_center = TBregmanDiv::BDivergence(data[i], centers[j]);
     if (div_to_center > radii[j])
       radii[j] = div_to_center;
   }

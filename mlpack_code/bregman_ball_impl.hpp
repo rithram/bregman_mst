@@ -55,16 +55,19 @@ BregmanBall<T, TBregmanDiv>::~BregmanBall()
 
 template<typename T, class TBregmanDiv>
 bool BregmanBall<T, TBregmanDiv>::CanPruneRight(
-    const Point<T>& q, const double q_div_to_best_candidate) const
+    const Point<T>& q, 
+    const Point<T>& q_prime,
+    const double q_div_to_best_candidate) const
 {
   double d_q_mu = TBregmanDiv::BDivergence(q, right_centroid_);
   //std::cout << "d_q_mu: " << d_q_mu << ", radius: " << radius_ << ", q_div_to_best_candidate: " << q_div_to_best_candidate << "\n";
-  return CanPruneRight(q, q_div_to_best_candidate, d_q_mu);
+  return CanPruneRight(q, q_prime, q_div_to_best_candidate, d_q_mu);
 }
 
 template<typename T, class TBregmanDiv>
 bool BregmanBall<T, TBregmanDiv>::CanPruneRight(
-    const Point<T>& q, 
+    const Point<T>& q,
+    const Point<T>& q_prime,
     const double q_div_to_best_candidate, 
     const double q_div_to_centroid) const
 {
@@ -79,8 +82,6 @@ bool BregmanBall<T, TBregmanDiv>::CanPruneRight(
   {
     return false;
   }  
-
-  const Point<T> q_prime = TBregmanDiv::Gradient(q);
 
   // initialize at the extreme values of theta
   return CanPruneRight(0.0, 1.0, q, q_prime, q_div_to_best_candidate);

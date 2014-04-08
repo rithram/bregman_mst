@@ -63,15 +63,23 @@ public:
       const double left_radius);
   
   ~BregmanBall();
+
+  // Add extra stats from the data if wanted
+  // In plain BregmanBall, nothing is done here
+  void AddExtraStats(const Table<T>& data, const size_t start, const size_t end) {}
   
   // Pruning rule for a single query
-  bool CanPruneRight(const Point<T>& q, const double q_div_to_best_candidate) const;
+  bool CanPruneRight(
+      const Point<T>& q,
+      const Point<T>& q_prime,
+      const double q_div_to_best_candidate) const;
   
   // We'll precompute this divergence to prioritize the tree search, 
   // so this function allows us not to compute
   // the distance to the centroid again
   bool CanPruneRight(
-      const Point<T>& q, 
+      const Point<T>& q,
+      const Point<T>& q_prime,
       const double q_div_to_best_candidate, 
       const double q_div_to_centroid) const;
 

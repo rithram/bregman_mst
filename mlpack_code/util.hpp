@@ -15,6 +15,9 @@
 namespace bmst {
 namespace util {
 
+template <class TPoint>
+bool PointHasZero(const TPoint& p);
+
 template <typename T>
 void SplitSet(
     const Table<T>& table, 
@@ -25,5 +28,6 @@ void SplitSet(
 }; // namespace
 }; // namespace
 
-#include "util_impl.hpp"
 #endif
+
+#include "util_impl.hpp"

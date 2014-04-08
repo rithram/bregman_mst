@@ -20,6 +20,18 @@
 namespace bmst {
 namespace util {
 
+template <class TPoint>
+bool PointHasZero(const TPoint& p) {
+  bool has_zero = false;
+  for (size_t i = 0; i < p.n_dims(); ++i) {
+    if (p[i] == 0) {
+      has_zero = true;
+      break;
+    }
+  }
+  return has_zero;
+}
+
 template <typename T>
 void SplitSet(
     const Table<T>& table, 
@@ -44,7 +56,7 @@ void SplitSet(
   // pick the queries
   for (size_t i = 0; i < table.n_points(); i++) 
   {
-    if (full_list[i] == 0)
+    if (full_list[i] == 0) 
       point_set.push_back(table[i]);
   }
   qset.reset(new Table<T>(point_set));
@@ -65,5 +77,4 @@ void SplitSet(
 }; // namespace
 }; // namespace
 
-#include "util_impl.hpp"
 #endif

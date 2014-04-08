@@ -1,4 +1,4 @@
-
+#include "bregman_ball.hpp"
 #include "left_nn_search.hpp"
 #include "KLDivergence.hpp"
 #include "L2Divergence.hpp"
@@ -7,7 +7,6 @@ using namespace bmst;
 
 int main(int argc, char* argv[]) 
 {
-  
   std::default_random_engine generator(time(NULL));
   std::uniform_real_distribution<double> randu(0, 10);
   
@@ -40,51 +39,45 @@ int main(int argc, char* argv[])
   // build the search class
   size_t leaf_size = 2;
   
-  LeftNNSearch<double, KLDivergence<double> > searcher(references, leaf_size);
 
   std::vector<size_t> neighbors(queries.n_points());
   std::vector<size_t> naive_neighbors(queries.n_points());
 
   std::cout << "Testing KL Divergence Search.\n";
-
-  for (int q = 0; q < queries.n_points(); q++)
   {
-    
-    neighbors[q] = searcher.ComputeNeighbor(queries[q]);
+    typedef KLDivergence<double> TBDiv;
+    typedef BregmanBall<double, TBDiv> TBBall;
+    LeftNNSearch<double, TBDiv, TBBall> searcher(references, leaf_size);
 
-    naive_neighbors[q] = searcher.ComputeNeighborNaive(queries[q]);
-    
-    assert(neighbors[q] == naive_neighbors[q]);
-    
-  } // loop over queries
-
+    for (int q = 0; q < queries.n_points(); q++)
+    {
+      neighbors[q] = searcher.ComputeNeighbor(queries[q]);
+      naive_neighbors[q] = searcher.ComputeNeighborNaive(queries[q]);
+      assert(neighbors[q] == naive_neighbors[q]);
+    } // loop over queries
+  }
   std::cout << "KL Divergence tests PASSED.\n";
 
   leaf_size = 5;
-
-  LeftNNSearch<double, L2Divergence<double> > searcher_l2(references, leaf_size);
-  
   neighbors.clear();
   neighbors.resize(queries.n_points());
   naive_neighbors.clear();
   naive_neighbors.resize(queries.n_points());
   
   std::cout << "Testing L2 Divergence Search.\n";
-  
-  
-  for (int q = 0; q < queries.n_points(); q++)
   {
-    
-    naive_neighbors[q] = searcher_l2.ComputeNeighborNaive(queries[q]);
-    neighbors[q] = searcher_l2.ComputeNeighbor(queries[q]);
-    
-    assert(neighbors[q] == naive_neighbors[q]);
-    
+    typedef L2Divergence<double> TBDiv;
+    typedef BregmanBall<double, TBDiv> TBBall;
+    LeftNNSearch<double, TBDiv, TBBall> searcher_l2(references, leaf_size);
+  
+    for (int q = 0; q < queries.n_points(); q++)
+    {
+      naive_neighbors[q] = searcher_l2.ComputeNeighborNaive(queries[q]);
+      neighbors[q] = searcher_l2.ComputeNeighbor(queries[q]);
+      assert(neighbors[q] == naive_neighbors[q]);
+    }
   }
-  
   std::cout << "L2 Divergence tests PASSED.\n";
-  
-  
+    
   return 0;
-  
 }

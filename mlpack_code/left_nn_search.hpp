@@ -1,51 +1,48 @@
-
-#ifndef _leftnn_search_hpp_
-#define _leftnn_search_hpp_
+#ifndef BMST_LEFT_NN_SEARCH_HPP_
+#define BMST_LEFT_NN_SEARCH_HPP_
 
 #include "bregman_ball_tree.hpp"
 #include "kmeans_splitter.hpp"
 
 namespace bmst {
 
-  template<typename T, class TBregmanDiv>
-  class LeftNNSearch {
+template<typename T, class TBDiv, class TBBall>
+class LeftNNSearch {
+public:
   
-  public:
-    
-    LeftNNSearch(const Table<T>& data, const size_t leaf_size);
-    
-    ~LeftNNSearch();
-    
-    size_t ComputeNeighbor(const Point<T>& query);
-    
-    size_t ComputeNeighborNaive(const Point<T>& query);
-    
-  private:
-    
-    typedef KMeansSplitter<T, TBregmanDiv> TSplitter;
-    
-    typedef BregmanBallTree<T, TBregmanDiv, TSplitter> TTreeType;
+  LeftNNSearch(const Table<T>& data, const size_t leaf_size);
   
-    Table<T> data_;
-    
-    TTreeType* tree_;
+  ~LeftNNSearch();
+  
+  size_t ComputeNeighbor(const Point<T>& query);
+  
+  size_t ComputeNeighborNaive(const Point<T>& query);
+  
+private:
+  
+  typedef KMeansSplitter<T, TBDiv> TSplitter;
+  
+  typedef BregmanBallTree<T, TBDiv, TBBall, TSplitter> TTreeType;
 
-    size_t leaf_size_;
-    
-    size_t neighbor_index_;
-    double neighbor_distance_;
+  Table<T> data_;
   
-    std::vector<size_t> old_from_new_indices_;
-    
-    // functions
-    
-    void SearchNode_(const TTreeType* node, const Point<T>& query, const T& d_q_to_centroid);
+  TTreeType* tree_;
+
+  size_t leaf_size_;
   
-  }; // class
+  size_t neighbor_index_;
+  double neighbor_distance_;
+
+  std::vector<size_t> old_from_new_indices_;
+  
+  // functions
+  void SearchNode_(const TTreeType* node, const Point<T>& query, const T& d_q_to_centroid);
+}; // class
 
 } // namespace
 
+#endif
+
 #include "left_nn_search_impl.hpp"
 
-#endif
 

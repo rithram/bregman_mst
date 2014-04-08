@@ -16,20 +16,20 @@
 #include "bregman_ball_tree.hpp"
 
 namespace bmst {
-  
-template <typename T, class TBregmanDiv, class TSplitter>
-BregmanBallTree<T, TBregmanDiv, TSplitter>::BregmanBallTree(
+
+template <typename T, class TBDiv, class TBBall, class TSplitter>
+BregmanBallTree<T, TBDiv, TBBall, TSplitter>::BregmanBallTree(
     const size_t begin,
     const size_t count,
-    const BregmanBall<T, TBregmanDiv>& bounding_ball) :
+    const TBBall& bounding_ball) :
   begin_(begin),
   count_(count),
   end_(begin + count),
   bounding_ball_(bounding_ball)
 {}
 
-template <typename T, class TBregmanDiv, class TSplitter>
-BregmanBallTree<T, TBregmanDiv, TSplitter>::BregmanBallTree(
+template <typename T, class TBDiv, class TBBall, class TSplitter>
+BregmanBallTree<T, TBDiv, TBBall, TSplitter>::BregmanBallTree(
     const Table<T>& table,
     const size_t begin,
     const size_t count) : 
@@ -45,19 +45,19 @@ BregmanBallTree<T, TBregmanDiv, TSplitter>::BregmanBallTree(
 
   center /= (T) count_;
   double radius = ComputeNodeRadius(table, begin_, end_, center);
-  BregmanBall<T, TBregmanDiv> node_bball(center, radius);
+  TBBall node_bball(center, radius);
   bounding_ball_ = node_bball;
 }
 
-template <typename T, class TBregmanDiv, class TSplitter>
-void BregmanBallTree<T, TBregmanDiv, TSplitter>::BuildTree(
+template <typename T, class TBDiv, class TBBall, class TSplitter>
+void BregmanBallTree<T, TBDiv, TBBall, TSplitter>::BuildTree(
     Table<T>& data,
     const size_t leaf_size, 
     const double min_ball_width, 
-    std::queue<BregmanBallTree<T, TBregmanDiv, TSplitter>*>& node_queue,
+    std::queue<BregmanBallTree<T, TBDiv, TBBall, TSplitter>*>& node_queue,
     std::vector<size_t>& old_from_new)
 {
-  typedef BregmanBallTree<T, TBregmanDiv, TSplitter> TNode;
+  typedef BregmanBallTree<T, TBDiv, TBBall, TSplitter> TNode;
   while (not node_queue.empty()) 
   {
     TNode* current_node = node_queue.front();
@@ -102,16 +102,16 @@ void BregmanBallTree<T, TBregmanDiv, TSplitter>::BuildTree(
       double root_radius = 
         ComputeNodeRadius(data, 0, data.n_points(), root_center);
       // initialize the root bounding ball
-      BregmanBall<T, TBregmanDiv> root_bball(root_center, root_radius);
+      BregmanBall<T, TBDiv> root_bball(root_center, root_radius);
       current_node->bounding_ball_ = root_bball;
     }
     if (left_count > 0 and left_count < current_node->Count()) 
     {
       // did find a viable split
-      BregmanBall<T, TBregmanDiv> left_bball(centers[0], radii[0]);
+      BregmanBall<T, TBDiv> left_bball(centers[0], radii[0]);
       current_node->left_.reset(
           new TNode(current_node->Begin(), left_count, left_bball));
-      BregmanBall<T, TBregmanDiv> right_bball(centers[1], radii[1]);
+      BregmanBall<T, TBDiv> right_bball(centers[1], radii[1]);
       current_node->right_.reset(new TNode(
           current_node->begin_ + left_count, 
           current_node->count_ - left_count, 
@@ -141,8 +141,8 @@ void BregmanBallTree<T, TBregmanDiv, TSplitter>::BuildTree(
   } // node queue loop
 } // BuildTree
 
-template <typename T, class TBregmanDiv, class TSplitter>
-double BregmanBallTree<T, TBregmanDiv, TSplitter>::ComputeNodeRadius(
+template <typename T, class TBDiv, class TBBall, class TSplitter>
+double BregmanBallTree<T, TBDiv, TBBall, TSplitter>::ComputeNodeRadius(
     const Table<T>& data,
     const size_t node_begin,
     const size_t node_end,
@@ -152,15 +152,15 @@ double BregmanBallTree<T, TBregmanDiv, TSplitter>::ComputeNodeRadius(
   double div_to_center;
   for (size_t i = node_begin; i < node_end; i++) 
   {
-    div_to_center = TBregmanDiv::Divergence(data[i], node_center);
+    div_to_center = TBDiv::BDivergence(data[i], node_center);
     if (div_to_center > node_radius)
       node_radius = div_to_center;
   }
   return node_radius;
 }
 
-template <typename T, class TBregmanDiv, class TSplitter>
-size_t BregmanBallTree<T, TBregmanDiv, TSplitter>::MatrixSwap(
+template <typename T, class TBDiv, class TBBall, class TSplitter>
+size_t BregmanBallTree<T, TBDiv, TBBall, TSplitter>::MatrixSwap(
     Table<T>& table,
     const size_t node_begin,
     const size_t node_end,
@@ -182,6 +182,7 @@ size_t BregmanBallTree<T, TBregmanDiv, TSplitter>::MatrixSwap(
     if (left_ind > right_ind) 
       break;
 
+    // FIXME: use std::swap here
     Point<T> temp_point = table[node_begin + left_ind];
     table[node_begin + left_ind] = table[node_begin + right_ind];
     table[node_begin + right_ind] = temp_point;
@@ -199,8 +200,8 @@ size_t BregmanBallTree<T, TBregmanDiv, TSplitter>::MatrixSwap(
   return left_ind;
 }
 
-template <typename T, class TBregmanDiv, class TSplitter>
-BregmanBallTree<T, TBregmanDiv, TSplitter>::BregmanBallTree(
+template <typename T, class TBDiv, class TBBall, class TSplitter>
+BregmanBallTree<T, TBDiv, TBBall, TSplitter>::BregmanBallTree(
     Table<T>& data, 
     std::vector<size_t>& old_from_new,
     const size_t leaf_size, 
@@ -220,20 +221,20 @@ BregmanBallTree<T, TBregmanDiv, TSplitter>::BregmanBallTree(
   for (size_t i = 0; i < count_; i++) 
     old_from_new[i] = i;
 
-  std::queue<BregmanBallTree<T, TBregmanDiv, TSplitter>*> node_queue;
+  std::queue<BregmanBallTree<T, TBDiv, TBBall, TSplitter>*> node_queue;
   node_queue.push(this);
   BuildTree(data, leaf_size, min_ball_width, node_queue, old_from_new);
 }
 
-template <typename T, class TBregmanDiv, class TSplitter>
-BregmanBallTree<T, TBregmanDiv, TSplitter>::~BregmanBallTree()
+template <typename T, class TBDiv, class TBBall, class TSplitter>
+BregmanBallTree<T, TBDiv, TBBall, TSplitter>::~BregmanBallTree()
 {
   // nothing to do here since the std::unique_ptr<> should take care 
   // of the automatic deletion of left_ and right_
 }
 
-template <typename T, class TBregmanDiv, class TSplitter>
-bool BregmanBallTree<T, TBregmanDiv, TSplitter>::CanPruneRight(
+template <typename T, class TBDiv, class TBBall, class TSplitter>
+bool BregmanBallTree<T, TBDiv, TBBall, TSplitter>::CanPruneRight(
     const Point<T>& q,
     const double q_div_to_best_candidate,
     const double q_div_to_center)
@@ -244,8 +245,8 @@ bool BregmanBallTree<T, TBregmanDiv, TSplitter>::CanPruneRight(
   return bounding_ball_.CanPruneRight(q, q_div_to_best_candidate);
 }
 
-template <typename T, class TBregmanDiv, class TSplitter>
-bool BregmanBallTree<T, TBregmanDiv, TSplitter>::CanPruneLeft(
+template <typename T, class TBDiv, class TBBall, class TSplitter>
+bool BregmanBallTree<T, TBDiv, TBBall, TSplitter>::CanPruneLeft(
     const Point<T>& q,
     const double q_div_to_best_candidate,
     const double q_div_to_center)
@@ -254,9 +255,9 @@ bool BregmanBallTree<T, TBregmanDiv, TSplitter>::CanPruneLeft(
   return false;
 }
 
-template <typename T, class TBregmanDiv, class TSplitter>
-bool BregmanBallTree<T, TBregmanDiv, TSplitter>::CanPruneRight(
-    const BregmanBallTree<T, TBregmanDiv, TSplitter>& other_node,
+template <typename T, class TBDiv, class TBBall, class TSplitter>
+bool BregmanBallTree<T, TBDiv, TBBall, TSplitter>::CanPruneRight(
+    const BregmanBallTree<T, TBDiv, TBBall, TSplitter>& other_node,
     const double node_max_div_to_best_candidate,
     const double node_div_to_center)
 {
@@ -264,9 +265,9 @@ bool BregmanBallTree<T, TBregmanDiv, TSplitter>::CanPruneRight(
   return false;
 }
 
-template <typename T, class TBregmanDiv, class TSplitter>
-bool BregmanBallTree<T, TBregmanDiv, TSplitter>::CanPruneLeft(
-    const BregmanBallTree<T, TBregmanDiv, TSplitter>& other_node,
+template <typename T, class TBDiv, class TBBall, class TSplitter>
+bool BregmanBallTree<T, TBDiv, TBBall, TSplitter>::CanPruneLeft(
+    const BregmanBallTree<T, TBDiv, TBBall, TSplitter>& other_node,
     const double node_max_div_to_best_candidate,
     const double center_div_to_node)
 {

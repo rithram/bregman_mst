@@ -22,7 +22,7 @@
 
 #include "L2Divergence.hpp"
 #include "KLDivergence.hpp"
-
+#include "bregman_ball.hpp"
 #include "left_nn_search.hpp"
 
 using namespace std;
@@ -149,34 +149,74 @@ int main(int argc, char* argv[])
   return 0;
 } // main
 
-
-template <typename T, class Divergence>
+template <typename T, class TDivergence>
 void DoSearchAndCompareToNaive(bmst::Table<T>& rset, bmst::Table<T>& qset)
 {
-  
   //qset.make_non_zero(0.01);
   //rset.make_non_zero(0.02);
-  
-  bmst::LeftNNSearch<T, Divergence> searcher(rset, 1);
+
+  cout << "Indexing the reference set ..." << endl;  
+  typedef bmst::BregmanBall<T, TDivergence> TBBall;
+  bmst::LeftNNSearch<T, TDivergence, TBBall> searcher(rset, 100);
+  cout << "Reference set indexed" << endl;
 
   std::vector<size_t> neighbors(qset.n_points());
   std::vector<size_t> naive_neighbors(qset.n_points());
 
   cout << "Testing search correctness ... ";
+  size_t errors = 0;
+  size_t num_queries_with_zero = 0;
+  size_t total_bdiv_counter = 0;
+  size_t total_grad_counter = 0;
+  size_t total_grad_con_counter = 0;
 
   for (size_t i = 0; i < qset.n_points(); i++) 
   {
-    neighbors[i] = searcher.ComputeNeighbor(qset[i]);
+    TDivergence::bdiv_counter = 0;
+    TDivergence::grad_counter = 0;
+    TDivergence::grad_con_counter = 0;
     naive_neighbors[i] = searcher.ComputeNeighborNaive(qset[i]);
-    
+    if (naive_neighbors[i] == -1) {
+      assert(bmst::util::PointHasZero(qset[i]));
+      ++num_queries_with_zero;
+    } else {
+      assert(naive_neighbors[i] < rset.n_points());
+      assert(TDivergence::bdiv_counter == rset.n_points());
+      assert(TDivergence::grad_counter == 0);
+      assert(TDivergence::grad_con_counter == 0);
+    }
+    TDivergence::bdiv_counter = 0;
+    TDivergence::grad_counter = 0;
+    TDivergence::grad_con_counter = 0;
+    neighbors[i] = searcher.ComputeNeighbor(qset[i]);
+    if (neighbors[i] == -1) {
+      assert(bmst::util::PointHasZero(qset[i]));
+    } else {
+      assert(neighbors[i] < rset.n_points());
+      total_bdiv_counter += TDivergence::bdiv_counter;
+      total_grad_counter += TDivergence::grad_counter;
+      total_grad_con_counter += TDivergence::grad_con_counter;
+    }
+
     if (neighbors[i] != naive_neighbors[i]) 
     {
-      qset[i].print();
+      if (neighbors[i] == -1 or naive_neighbors[i] == -1) {
+        ++errors;
+      } else {
+        T naive_div = TDivergence::BDivergence(qset[i], rset[naive_neighbors[i]]);
+        T div = TDivergence::BDivergence(qset[i], rset[neighbors[i]]);
+        if (naive_div < div) ++errors;
+      }
+      // qset[i].print();
     }
-    
-    assert(neighbors[i] == naive_neighbors[i]);
   }
   cout << "DONE " << endl;
-
+  cout << errors << "/" << qset.n_points() << " errors" << endl;
+  cout << num_queries_with_zero << "/" << qset.n_points() << 
+    " queries with zero" << endl;
+  cout << "Naive comp: " << "D" << rset.n_points() * 
+    (qset.n_points() - num_queries_with_zero) << endl;
+  cout << "Tree comp:  " << "D" << total_bdiv_counter << " G" << 
+    total_grad_counter << " C" << total_grad_con_counter << endl;
   return;
 }

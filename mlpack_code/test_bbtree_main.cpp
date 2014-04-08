@@ -21,6 +21,7 @@
 #include "KLDivergence.hpp"
 #include "L2Divergence.hpp"
 #include "kmeans_splitter.hpp"
+#include "bregman_ball.hpp"
 #include "bregman_ball_tree.hpp"
 
 template <typename T, class TNode, class TBregmanDiv>
@@ -50,7 +51,8 @@ int main(int argc, char* argv[])
 
     typedef bmst::L2Divergence<double> TBregmanDiv;
     typedef bmst::KMeansSplitter<double, TBregmanDiv> TSplitter;
-    typedef bmst::BregmanBallTree<double, TBregmanDiv, TSplitter> BBTree;
+    typedef bmst::BregmanBall<double, TBregmanDiv> TBBall;
+    typedef bmst::BregmanBallTree<double, TBregmanDiv, TBBall, TSplitter> BBTree;
 
     std::vector<size_t> old_from_new;
     BBTree* test_bbtree = new BBTree(rand_table, old_from_new, 5);
@@ -93,7 +95,8 @@ int main(int argc, char* argv[])
 
     typedef bmst::KLDivergence<double> TBregmanDiv;
     typedef bmst::KMeansSplitter<double, TBregmanDiv> TSplitter;
-    typedef bmst::BregmanBallTree<double, TBregmanDiv, TSplitter> BBTree;
+    typedef bmst::BregmanBall<double, TBregmanDiv> TBBall;
+    typedef bmst::BregmanBallTree<double, TBregmanDiv, TBBall, TSplitter> BBTree;
 
     std::vector<size_t> old_from_new;
     BBTree* test_bbtree = new BBTree(rand_table, old_from_new, 5);
@@ -150,7 +153,7 @@ void TestTreeNode(const bmst::Table<T>& table, const TNode* node)
   double radius = 0;
   for (size_t i = node->Begin(); i < node->End(); i++)
   {
-    double div_to_center = TBregmanDiv::Divergence(table[i], center);
+    double div_to_center = TBregmanDiv::BDivergence(table[i], center);
     if (div_to_center > radius)
       radius = div_to_center;
   }

@@ -19,23 +19,21 @@
 
 #include "data.hpp"
 
-#include "bregman_ball.hpp"
-
 namespace bmst {
-  
-template <typename T, class TBregmanDiv, class TSplitter>
+
+template <typename T, class TBDiv, class TBBall, class TSplitter>
 class BregmanBallTree
 {
 private:
-  typedef BregmanBallTree<T, TBregmanDiv, TSplitter> TBBTree;
+  typedef BregmanBallTree<T, TBDiv, TBBall, TSplitter> TBBTree;
 
   // Indices into the data set
   int begin_;
   int end_;
   int count_;
 
-  // Node statistics
-  BregmanBall<T, TBregmanDiv> bounding_ball_;
+  // Node bounds
+  TBBall bounding_ball_;
 
   // children
   std::unique_ptr<TBBTree> left_;
@@ -45,7 +43,7 @@ private:
   BregmanBallTree(
       const size_t begin,
       const size_t count,
-      const BregmanBall<T, TBregmanDiv>& bounding_ball);
+      const TBBall& bounding_ball);
 
   // Initializer
   BregmanBallTree(
@@ -58,7 +56,7 @@ private:
       Table<T>& table,
       const size_t leaf_size,
       const double min_ball_width,
-      std::queue<BregmanBallTree<T, TBregmanDiv, TSplitter>*>& node_queue,
+      std::queue<TBBTree*>& node_queue,
       std::vector<size_t>& old_from_new);
 
   double ComputeNodeRadius(
@@ -96,8 +94,8 @@ public:
   const double RRadius() const { return bounding_ball_.right_radius(); }
   const Point<T>& LCenter() const { return bounding_ball_.left_centroid(); }
   const double LRadius() const { return bounding_ball_.left_radius(); }
-  const BregmanBall<T, TBregmanDiv>& Bound() const { return bounding_ball_; }
-  BregmanBall<T, TBregmanDiv>& Bound() { return bounding_ball_; }
+  const TBBall& Bound() const { return bounding_ball_; }
+  TBBall& Bound() { return bounding_ball_; }
 
   // Pruning functions
   // point-ball right-prune
@@ -115,20 +113,21 @@ public:
 
   // TO-DO: ball-ball right prune
   bool CanPruneRight(
-      const BregmanBallTree<T, TBregmanDiv, TSplitter>& other_node,
+      const TBBTree& other_node,
       const double node_max_div_to_best_candidate,
       const double node_div_to_center = std::numeric_limits<double>::max());
 
   // TO-DO: if needed, ball-ball left prune
   // API might change
   bool CanPruneLeft(
-      const BregmanBallTree<T, TBregmanDiv, TSplitter>& other_node,
+      const TBBTree& other_node,
       const double node_max_div_to_best_candidate,
       const double center_div_to_node = std::numeric_limits<double>::max());
 }; // class
   
 } // namespace
 
+#endif
+
 #include "bregman_ball_tree_impl.hpp"
 
-#endif

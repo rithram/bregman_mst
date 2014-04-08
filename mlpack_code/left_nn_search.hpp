@@ -36,7 +36,11 @@ private:
   std::vector<size_t> old_from_new_indices_;
   
   // functions
-  void SearchNode_(const TTreeType* node, const Point<T>& query, const T& d_q_to_centroid);
+  void SearchNode_(
+      const TTreeType* node,
+      const Point<T>& query,
+      const Point<T>& query_prime,
+      const T& d_q_to_centroid);
 }; // class
 
 } // namespace

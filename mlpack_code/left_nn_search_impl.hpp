@@ -30,8 +30,9 @@ size_t LeftNNSearch<T, TBDiv, TBBall>::ComputeNeighbor(const Point<T>& query)
   neighbor_distance_ = std::numeric_limits<T>::max();
   
   const T& dist_to_centroid = TBDiv::BDivergence(query, tree_->RCenter());
+  const Point<T> query_prime = TBDiv::Gradient(query);
   
-  SearchNode_(tree_, query, dist_to_centroid);
+  SearchNode_(tree_, query, query_prime, dist_to_centroid);
   
   if (neighbor_index_ == -1) {
     assert(neighbor_distance_ == std::numeric_limits<T>::max());
@@ -72,42 +73,52 @@ size_t LeftNNSearch<T, TBDiv, TBBall>::ComputeNeighborNaive(const Point<T>& quer
 
 template<typename T, class TBDiv, class TBBall>
 void LeftNNSearch<T, TBDiv, TBBall>::SearchNode_(
-    const TTreeType* node, const Point<T>& query, const T& dist_to_centroid) 
+    const TTreeType* node, 
+    const Point<T>& query, 
+    const Point<T>& query_prime, 
+    const T& dist_to_centroid) 
 {
-  if (neighbor_distance_ < std::numeric_limits<T>::max() 
-      and node->Bound().CanPruneRight(query, neighbor_distance_)) 
-  {
-    // then we pruned, so don't do anything
-    return;
-  }
-  else if (node->IsLeaf()) 
+  // at leaf, do exhaustive search
+  if (node->IsLeaf()) 
   {
     for (int i = node->Begin(); i < node->End(); i++)
     {
       double dist = TBDiv::BDivergence(data_[i], query);
-      if (dist < neighbor_distance_) {
+      if (dist < neighbor_distance_) 
+      {
         neighbor_distance_ = dist;
         neighbor_index_ = i;
       }
     } // for references
+    return;
   } // base case
+
+  double d_left = TBDiv::BDivergence(tree_->Left()->RCenter(), query);
+  double d_right = TBDiv::BDivergence(tree_->Right()->RCenter(), query);
+  // Prioritize search by distance to centroid
+  // NOTE: This current scheme always goes to atleast one leaf of any subtree 
+  // that is not pruned -- this is useful if you are not pruning a lot anyways
+  // because in that case, you save computation that is needed for doing the 
+  // pruning check
+  if (d_left < d_right)
+  {
+    // search left
+    SearchNode_(node->Left(), query, query_prime, d_left);
+    // try to prune right
+    if (not node->Right()->Bound().CanPruneRight(
+        query, query_prime, neighbor_distance_))
+      SearchNode_(node->Right(), query, query_prime, d_right);
+  }
   else 
   {
-    double d_left = TBDiv::BDivergence(tree_->Left()->RCenter(), query);
-    double d_right = TBDiv::BDivergence(tree_->Right()->RCenter(), query);
-    
-    // Prioritize search by distance to centroid
-    if (d_left < d_right)
-    {
-      SearchNode_(node->Left(), query, d_left);
-      SearchNode_(node->Right(), query, d_right);
-    }
-    else 
-    {
-      SearchNode_(node->Right(), query, d_right);
-      SearchNode_(node->Left(), query, d_left);
-    } 
-  } // can't prune internal node
+    // search right
+    SearchNode_(node->Right(), query, query_prime, d_right);
+    // try to prune left
+    if (not node->Left()->Bound().CanPruneRight(
+        query, query_prime, neighbor_distance_))
+      SearchNode_(node->Left(), query, query_prime, d_left);
+  } 
+
   return;
 } // SearchNode_() 
 

@@ -19,19 +19,21 @@ class BregmanBall
 private:
   // The center and radius of the ball
 
-  // the right centroid mu is the point such that 
-  // Div(x, mu) \leq left_radius_ for all x in the ball
+  // the right centroid is the point such that 
+  // Div(x, right_centroid_) \leq right_radius_ for all x in the ball
   Point<T> right_centroid_;
 
-  // the left centroid nu is the point such that
-  // Div(nu, x) \leq right_radius_ for all y in the ball
+  // the left centroid is the point such that
+  // Div(left_centroid_, x) \leq left_radius_ for all x in the ball
   Point<T> left_centroid_;
 
   // the gradients of the centroids
   Point<T> right_centroid_prime_;
   Point<T> left_centroid_prime_;
   
+  // max_x BDiv(x, right_centroid_)
   double right_radius_;
+  // max_x BDiv(left_centroid_, x)
   double left_radius_;
   
   size_t component_;

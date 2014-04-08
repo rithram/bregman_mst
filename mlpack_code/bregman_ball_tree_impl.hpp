@@ -102,16 +102,16 @@ void BregmanBallTree<T, TBDiv, TBBall, TSplitter>::BuildTree(
       double root_radius = 
         ComputeNodeRadius(data, 0, data.n_points(), root_center);
       // initialize the root bounding ball
-      BregmanBall<T, TBDiv> root_bball(root_center, root_radius);
+      TBBall root_bball(root_center, root_radius);
       current_node->bounding_ball_ = root_bball;
     }
     if (left_count > 0 and left_count < current_node->Count()) 
     {
       // did find a viable split
-      BregmanBall<T, TBDiv> left_bball(centers[0], radii[0]);
+      TBBall left_bball(centers[0], radii[0]);
       current_node->left_.reset(
           new TNode(current_node->Begin(), left_count, left_bball));
-      BregmanBall<T, TBDiv> right_bball(centers[1], radii[1]);
+      TBBall right_bball(centers[1], radii[1]);
       current_node->right_.reset(new TNode(
           current_node->begin_ + left_count, 
           current_node->count_ - left_count, 

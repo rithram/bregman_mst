@@ -9,19 +9,23 @@
 
 namespace bmst {
 
-// This doesn't actually need templates, since the data type needs to be in R^d for some d
-// Might be templated by the type I'm using for vectors, though? 
 template<typename T>
 class L2Divergence
 {
 public:
-  static double Divergence(const Point<T>& x, const Point<T>& y);
-  static Point<T> Gradient(const Point<T>& x);
-  static Point<T> GradientConjugate(const Point<T>& x);
+  static inline double BDivergence(const Point<T>& x, const Point<T>& y);
+  static inline Point<T> Gradient(const Point<T>& x);
+  static inline Point<T> GradientConjugate(const Point<T>& x);
+  static inline double JBDivergence(const Point<T>& x, const Point<T>& y);
+  static inline double StrongConvexityCoefficient() { return 1.0; }
+  static size_t bdiv_counter;
+  static size_t grad_counter;
+  static size_t grad_con_counter;
+  static size_t jbdiv_counter;
 }; // class L2Divergence
 
 } // namespace
 
-#include "L2Divergence_impl.hpp"
-
 #endif
+
+#include "L2Divergence_impl.hpp"

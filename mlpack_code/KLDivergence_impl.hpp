@@ -1,13 +1,28 @@
 #ifndef KL_DIVERGENCE_IMPL_HPP_
 #define KL_DIVERGENCE_IMPL_HPP_
 
+#include <cmath>
+
+#include "KLDivergence.hpp"
 
 namespace bmst {
 
-template<typename T>
-double KLDivergence<T>::Divergence(const Point<T>& x, const Point<T>& y)
-{
+template<typename T> 
+size_t KLDivergence<T>::bdiv_counter = 0;
 
+template<typename T> 
+size_t KLDivergence<T>::grad_counter = 0;
+
+template<typename T> 
+size_t KLDivergence<T>::grad_con_counter = 0;
+
+template<typename T> 
+size_t KLDivergence<T>::jbdiv_counter = 0;
+
+template<typename T>
+double KLDivergence<T>::BDivergence(const Point<T>& x, const Point<T>& y)
+{
+  ++bdiv_counter;
   assert(x.n_dims() == y.n_dims());
 
   double result = 0.0;
@@ -44,13 +59,12 @@ double KLDivergence<T>::Divergence(const Point<T>& x, const Point<T>& y)
   } // loop over features
     
   return result;
-
 }
 
 template<typename T>
 Point<T> KLDivergence<T>::Gradient(const Point<T>& x)
 {
-
+  ++grad_counter;
   Point<T> result;
   result.zeros(x.n_dims());
 
@@ -71,13 +85,12 @@ Point<T> KLDivergence<T>::Gradient(const Point<T>& x)
   }
 
   return result;
-
 }
 
 template<typename T>
 Point<T> KLDivergence<T>::GradientConjugate(const Point<T>& x)
 {
-
+  ++grad_con_counter;
   Point<T> result;
   result.zeros(x.n_dims());
   
@@ -87,7 +100,29 @@ Point<T> KLDivergence<T>::GradientConjugate(const Point<T>& x)
   }
   
   return result;
+}
 
+template<typename T>
+double KLDivergence<T>::JBDivergence(const Point<T>& x, const Point<T>& y) {
+  // compute f(x) + f(x) - 2 f((x+y)/2)
+  // \sum_i x_i log x_i + y_i log y_i - (x_i + y_i) log 0.5 * (x_i + y_i)
+  ++jbdiv_counter;
+  assert(x.n_dims() == y.n_dims());
+  Point<T> z = x + y;
+  double result = 0.0;
+  for (size_t i = 0; i < x.n_dims(); ++i) 
+  {
+    if (x[i] >= std::numeric_limits<double>::epsilon()) 
+      result += (x[i] * log(x[i]));
+
+    if (y[i] >= std::numeric_limits<double>::epsilon()) 
+      result += (y[i] * log(y[i]));
+  
+    if (z[i] >= std::numeric_limits<double>::epsilon())
+      result -= (z[i] * log(0.5 * z[i]));
+  }
+
+  return result;
 }
 
 } // namespace

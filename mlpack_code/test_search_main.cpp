@@ -28,7 +28,8 @@
 using namespace std;
 
 template <typename T, class Divergence>
-void DoSearchAndCompareToNaive(bmst::Table<T>& rset, bmst::Table<T>& qset);
+void DoSearchAndCompareToNaive(
+    bmst::Table<T>& rset, bmst::Table<T>& qset, const size_t leaf_size);
 
 int main(int argc, char* argv[])
 {
@@ -51,6 +52,9 @@ int main(int argc, char* argv[])
     ("k", bpo::value<string>(),
      "The number of neighbors required for each query "
      "(optional, 'k' defaults to 1)")
+    ("leaf_size", bpo::value<string>(),
+     "The maximum number of points in any leaf of the tree "
+     "(optional, 'leaf_size' defaults to 10)")
     ("split_ratio", bpo::value<string>(), "The ratio with which the dataset "
      "is split into query and reference sets (optional, defaults to 0.1 "
      "if the query set is not provided)");
@@ -90,7 +94,8 @@ int main(int argc, char* argv[])
   size_t k = vm.count("k") ? atoi(vm["k"].as<string>().c_str()) : 1;
   double query_ref_split_ratio = vm.count("split_ratio") ? 
     atof(vm["split_ratio"].as<string>().c_str()) : 0.1;
-
+  size_t leaf_size = vm.count("leaf_size") ? 
+    atoi(vm["leaf_size"].as<string>().c_str()) : 10;
 
   if (divergences.find(chosen_divergence) == divergences.end())
   {
@@ -133,11 +138,13 @@ int main(int argc, char* argv[])
     endl;
 
   if (chosen_divergence == "KL")
-    DoSearchAndCompareToNaive<float, bmst::KLDivergence<float> >(*rset, *qset);
+    DoSearchAndCompareToNaive<float, bmst::KLDivergence<float> >(
+        *rset, *qset, leaf_size);
   else
   {  
     assert(chosen_divergence == "L2");
-    DoSearchAndCompareToNaive<float, bmst::L2Divergence<float> >(*rset, *qset);
+    DoSearchAndCompareToNaive<float, bmst::L2Divergence<float> >(
+        *rset, *qset, leaf_size);
   }
 
   if (results_file != "")
@@ -150,20 +157,22 @@ int main(int argc, char* argv[])
 } // main
 
 template <typename T, class TDivergence>
-void DoSearchAndCompareToNaive(bmst::Table<T>& rset, bmst::Table<T>& qset)
+void DoSearchAndCompareToNaive(
+    bmst::Table<T>& rset, bmst::Table<T>& qset, const size_t leaf_size)
 {
   //qset.make_non_zero(0.01);
   //rset.make_non_zero(0.02);
 
-  cout << "Indexing the reference set ..." << endl;  
+  cout << "[INFO] Indexing the reference set with leaves of maximum size " << 
+    leaf_size << " ..." << endl;  
   typedef bmst::BregmanBall<T, TDivergence> TBBall;
-  bmst::LeftNNSearch<T, TDivergence, TBBall> searcher(rset, 100);
-  cout << "Reference set indexed" << endl;
+  bmst::LeftNNSearch<T, TDivergence, TBBall> searcher(rset, leaf_size);
+  cout << "[INFO] Reference set indexed" << endl;
 
   std::vector<size_t> neighbors(qset.n_points());
   std::vector<size_t> naive_neighbors(qset.n_points());
 
-  cout << "Testing search correctness ... ";
+  cout << "[INFO] Testing search correctness ... ";
   size_t errors = 0;
   size_t num_queries_with_zero = 0;
   size_t total_bdiv_counter = 0;
@@ -211,12 +220,16 @@ void DoSearchAndCompareToNaive(bmst::Table<T>& rset, bmst::Table<T>& qset)
     }
   }
   cout << "DONE " << endl;
+  if (errors > 0) 
+    cout << "[ERROR] ";
+  else
+    cout << "[INFO] ";
   cout << errors << "/" << qset.n_points() << " errors" << endl;
-  cout << num_queries_with_zero << "/" << qset.n_points() << 
+  cout << "[INFO] " << num_queries_with_zero << "/" << qset.n_points() << 
     " queries with zero" << endl;
-  cout << "Naive comp: " << "D" << rset.n_points() * 
+  cout << "[INFO] Naive comp: " << "D " << rset.n_points() * 
     (qset.n_points() - num_queries_with_zero) << endl;
-  cout << "Tree comp:  " << "D" << total_bdiv_counter << " G" << 
-    total_grad_counter << " C" << total_grad_con_counter << endl;
+  cout << "[INFO] Tree comp:  " << "D " << total_bdiv_counter << " G " << 
+    total_grad_counter << " C " << total_grad_con_counter << endl;
   return;
 }

@@ -96,7 +96,10 @@ Point<T> KLDivergence<T>::GradientConjugate(const Point<T>& x)
   
   for (int i = 0; i < x.n_dims(); i++)
   {
-    result[i] = exp(x[i] - 1.0);
+    if (x[i] > -std::numeric_limits<T>::max())
+      result[i] = exp(x[i] - 1.0);
+    else
+      result[i] = 0;
   }
   
   return result;

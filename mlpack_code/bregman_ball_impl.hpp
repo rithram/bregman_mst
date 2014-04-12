@@ -59,6 +59,7 @@ bool BregmanBall<T, TBregmanDiv>::CanPruneRight(
     const Point<T>& q_prime,
     const double q_div_to_best_candidate) const
 {
+  assert(q.n_dims() == q_prime.n_dims());
   double d_q_mu = TBregmanDiv::BDivergence(q, right_centroid_);
   //std::cout << "d_q_mu: " << d_q_mu << ", radius: " << radius_ << ", q_div_to_best_candidate: " << q_div_to_best_candidate << "\n";
   return CanPruneRight(q, q_prime, q_div_to_best_candidate, d_q_mu);
@@ -77,8 +78,8 @@ bool BregmanBall<T, TBregmanDiv>::CanPruneRight(
   // even with theta = 0, so don't bother
   // Also, if the node is a singleton, just do the base case
   if (right_radius_ < std::numeric_limits<T>::epsilon()
-      || q_div_to_centroid <= right_radius_ 
-      || q_div_to_centroid < q_div_to_best_candidate)
+      or q_div_to_centroid <= right_radius_ 
+      or q_div_to_centroid < q_div_to_best_candidate)
   {
     return false;
   }  
@@ -95,8 +96,28 @@ bool BregmanBall<T, TBregmanDiv>::CanPruneRight(
     const Point<T>& q_prime,
     const double q_div_to_best_candidate) const 
 {
+  if (1.0 - theta_l < std::numeric_limits<T>::epsilon()) 
+  {
+    // x_theta = mu, but still appears to be outside the ball
+    // Possible reasons:
+    // * ball radius very small (which we already check for)
+    // * d(x_theta, mu) = \infty, which means mu has zero
+    //   This is possible when:
+    //   ** mu is just a single point with zero (compute d(mu, x) and return),
+    //      so effectively no prune
+    //   ** all points have same zero (since right_radius_ != \infty), 
+    //      so cannot really prune since we dont know the actual d(p, q)
+    return false;
+  }
+  if (theta_r < std::numeric_limits<T>::epsilon()) 
+  {
+    // x_theta = q, and we are still in the ball
+    // * q is almost in the ball, so do not prune
+    return false;
+  }
+
   double theta = 0.5 * (theta_l + theta_r);
-  
+ 
   //std::cout << "Searching, theta = " << theta << "\n";
   
   //std::cout << "q: ";
@@ -127,8 +148,11 @@ bool BregmanBall<T, TBregmanDiv>::CanPruneRight(
   }
   else if (d_x_theta_mu > right_radius_)
   {
-    // we're outside the ball, so move inward
+    // we're outside the ball
+    // if (d_x_theta_q < q_div_to_best_candidate) // worth moving inward
     return CanPruneRight(theta, theta_r, q, q_prime, q_div_to_best_candidate);
+    // else
+
   }
   else 
   {

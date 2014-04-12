@@ -40,7 +40,7 @@ private:
       const TTreeType* node,
       const Point<T>& query,
       const Point<T>& query_prime,
-      const T& d_q_to_centroid);
+      const T d_q_to_centroid);
 }; // class
 
 } // namespace

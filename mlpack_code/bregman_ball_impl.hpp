@@ -107,6 +107,8 @@ bool BregmanBall<T, TBregmanDiv>::CanPruneRight(
     //      so effectively no prune
     //   ** all points have same zero (since right_radius_ != \infty), 
     //      so cannot really prune since we dont know the actual d(p, q)
+    // NOTE: The above explanation is only valid of KL-divergence
+    // but we still cannot prune so that is that
     return false;
   }
   if (theta_r < std::numeric_limits<T>::epsilon()) 

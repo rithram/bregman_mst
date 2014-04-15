@@ -16,7 +16,7 @@ namespace bmst {
 template <typename T, class TBregmanDiv>
 class BregmanBall 
 {
-private:
+protected:
   // The center and radius of the ball
 
   // the right centroid is the point such that 
@@ -112,4 +112,3 @@ public:
 #endif
 
 #include "bregman_ball_impl.hpp"
-

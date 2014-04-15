@@ -23,11 +23,12 @@
 #include "L2Divergence.hpp"
 #include "KLDivergence.hpp"
 #include "bregman_ball.hpp"
+#include "enhanced_bregman_ball.hpp"
 #include "left_nn_search.hpp"
 
 using namespace std;
 
-template <typename T, class Divergence>
+template <typename T, class Divergence, class TBBall>
 void DoSearchAndCompareToNaive(
     bmst::Table<T>& rset, bmst::Table<T>& qset, const size_t leaf_size);
 
@@ -137,13 +138,17 @@ int main(int argc, char* argv[])
     " points with respect to the " << chosen_divergence << "-divergence" << 
     endl;
 
-  if (chosen_divergence == "KL")
-    DoSearchAndCompareToNaive<float, bmst::KLDivergence<float> >(
+  if (chosen_divergence == "KL") 
+  {
+    typedef bmst::EnhancedBregmanBall<float, bmst::KLDivergence<float> > TBBall;
+    DoSearchAndCompareToNaive<float, bmst::KLDivergence<float>, TBBall>(
         *rset, *qset, leaf_size);
+  }  
   else
   {  
     assert(chosen_divergence == "L2");
-    DoSearchAndCompareToNaive<float, bmst::L2Divergence<float> >(
+    typedef bmst::EnhancedBregmanBall<float, bmst::L2Divergence<float> > TBBall;
+    DoSearchAndCompareToNaive<float, bmst::L2Divergence<float>, TBBall >(
         *rset, *qset, leaf_size);
   }
 
@@ -156,7 +161,7 @@ int main(int argc, char* argv[])
   return 0;
 } // main
 
-template <typename T, class TDivergence>
+template <typename T, class TDivergence, class TBBall>
 void DoSearchAndCompareToNaive(
     bmst::Table<T>& rset, bmst::Table<T>& qset, const size_t leaf_size)
 {
@@ -165,7 +170,6 @@ void DoSearchAndCompareToNaive(
 
   cout << "[INFO] Indexing the reference set with leaves of maximum size " << 
     leaf_size << " ..." << endl;  
-  typedef bmst::BregmanBall<T, TDivergence> TBBall;
   bmst::LeftNNSearch<T, TDivergence, TBBall> searcher(rset, leaf_size);
   cout << "[INFO] Reference set indexed" << endl;
 

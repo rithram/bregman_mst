@@ -16,6 +16,7 @@ public:
   static inline double BDivergence(const Point<T>& x, const Point<T>& y);
   static inline Point<T> Gradient(const Point<T>& x);
   static inline Point<T> GradientConjugate(const Point<T>& x);
+  static inline bool IsCPD() { return true; }
   static inline double JBDivergence(const Point<T>& x, const Point<T>& y);
   static inline double StrongConvexityCoefficient() { return 1.0; }
   static size_t bdiv_counter;
